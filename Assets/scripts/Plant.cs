@@ -22,6 +22,14 @@ public class Plant : ObjectGenerator {
 	public float childHeightLossMin = 0.4f;
 	public float childHeightLossMax = 0.8f;
 
+	public float nonRootOnlyLeafP = 0.3f;
+
+	[Range(0,1)]
+	public float growthDownTolerance = 0.8f;
+
+	[Range(0, 2)]
+	public float growthChildBaseTolerance = 0.8f;
+
 
 	private Vector3[] V;
 
@@ -42,11 +50,11 @@ public class Plant : ObjectGenerator {
 		Debug.Log("===");
 		Debug.Log((A-B).magnitude);
 		Debug.Log(baseDirection.magnitude);*/
-		return (_anchorPositions > 0 & Random.value < 0.8f &
+		return (_anchorPositions > 0 & Random.value < Vector3.Lerp(A, B, 0.5f).magnitude / segmentHeight * 0.75f &
 		        (superStructureSlots < _anchorPositions ? 
 		        	true : Random.value / (superStructureSlots - _anchorPositions) < 0.5f) &
-		        (A - B).magnitude < baseDirection.magnitude * 0.9f &
-		        Vector3.Dot((A - B).normalized, Vector3.right) < 0.8f);
+		        (A - B).magnitude < baseDirection.magnitude * growthChildBaseTolerance &
+		        Vector3.Dot((A - B).normalized, Vector3.right) < growthDownTolerance);
 	}
 
 	protected void GenerateLeafVertices() {
@@ -225,9 +233,13 @@ public class Plant : ObjectGenerator {
 	}
 
 	private void updateChild(Plant child) {
-		child._anchorPositions = _anchorPositions - Random.Range(childAnchorLossMin, 
-		                                                         childAnchorLossMax);
-		child._anchorPositions = child._anchorPositions < 0 ? 0 : child._anchorPositions;
+		if (foundation != null & Random.value < nonRootOnlyLeafP) {
+			child._anchorPositions = 0;
+		} else {
+			child._anchorPositions = _anchorPositions - Random.Range(childAnchorLossMin, 
+			                                                         childAnchorLossMax);
+			child._anchorPositions = child._anchorPositions < 0 ? 0 : child._anchorPositions;
+		}
 		child.segmentHeight = segmentHeight * Random.Range(childHeightLossMax, childHeightLossMin);
 	}
 }
