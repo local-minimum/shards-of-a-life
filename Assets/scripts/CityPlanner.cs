@@ -5,18 +5,20 @@ using System.Collections.Generic;
 public class CityPlanner : MonoBehaviour {
 
 	public bool debug = true;
-	public float stepNorm = 0.1f;
-	public float stepNoise = 0.025f;
+	public static float stepNorm = 0.1f;
+	public static float stepNoise = 0.025f;
 
-	public float houseWidthMin = 4f;
-	public float houseWidthMax = 10f;
+	public static float houseWidthMin = 4f;
+	public static float houseWidthMax = 14f;
 
-	public int minSegments = 3;
-	public int maxSegments = 10;
+	public static int minSegments = 3;
+	public static int maxSegments = 10;
 
-	public float minSpacing = 0.5f;
-	public float maxSpacing = 1f;
+	public static float minSpacing = 0.5f;
+	public static float maxSpacing = 1f;
+	private static int houseId = 0;
 
+	/*
 	List<House> _houses = new List<House>();
 
 	// Use this for initialization
@@ -24,28 +26,40 @@ public class CityPlanner : MonoBehaviour {
 		foreach (GameObject h in GameObject.FindGameObjectsWithTag("House"))
 			_houses.Add(h.GetComponent<House>());
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (debug && Input.GetKeyDown(KeyCode.B)) {
-			float _y = Random.Range(0f, 1000f);
-			float _x = Random.Range(0f, 1000f);
-			float _xStep = Random.Range(stepNorm - stepNoise, stepNorm + stepNoise);
+	*/
 
-			int i = 0;
-			House prevH = null;
+	public static House PrepareFoundation(Vector3 pos, Transform parentTransform) {
+		GameObject GO = new GameObject();
+		GO.transform.parent = parentTransform;
+		GO.transform.localPosition = pos;
+		GO.name = string.Format("House {0}", houseId);
+		houseId++;
+		return GO.AddComponent<House>();
 
-			foreach (House h in _houses) {
-				if (i > 0) {
-					Vector3 p = h.transform.localPosition;
-					p.x = prevH.transform.position.x + h.baseWidth + Random.Range(minSpacing, maxSpacing);
-					h.transform.localPosition = p;
-				}
-				h.Generate(Random.Range(minSegments, maxSegments),
-				           houseWidthMin + houseWidthMax * Mathf.PerlinNoise(_x + _xStep * i, _y));
-				i++;
-				prevH = h;
-			}
+	}
+
+
+	public static void Architect(List<House> houses, List<float> houseWidths) {
+
+		float _y = Random.Range(0f, 1000f);
+		float _x = Random.Range(0f, 1000f);
+		float _heightVar = (float) (maxSegments - minSegments);
+		float _xStep = Random.Range(stepNorm - stepNoise, stepNorm + stepNoise);
+
+		int i = 0;
+		House prevH = null;
+
+		foreach (House h in houses) {
+			Vector3 p = h.transform.localPosition;
+			float w = Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
+			p.x += Random.Range(0, houseWidths[i] - w);
+			h.transform.localPosition = p;
+			if (h.debug)
+				h.setupComponensForDebug();
+			h.Generate(
+				minSegments + Mathf.RoundToInt(_heightVar * Mathf.PerlinNoise(_x + _xStep * h.transform.position.x, _y)),
+			w);
+			i++;
 		}
 	}
 }

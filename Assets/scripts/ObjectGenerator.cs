@@ -71,12 +71,16 @@ public abstract class ObjectGenerator : MonoBehaviour {
 
 	// Adds the needed features to draw the mesh
 	protected void Start () {
-		
+		setupComponensForDebug();
+	}
+
+	public void setupComponensForDebug() {
 		if (!gameObject.GetComponent<MeshRenderer>()) {
 			gameObject.AddComponent<MeshRenderer>();
 			gameObject.renderer.material = new Material(Shader.Find(materialName));
 			gameObject.AddComponent<MeshFilter>();
 		}
+
 	}
 
 	/// <summary>
@@ -230,19 +234,20 @@ public abstract class ObjectGenerator : MonoBehaviour {
 	/// </summary>
 	public void Build() {
 		GenerateVertices();
-		
-		Mesh mesh = GetComponent<MeshFilter>().mesh;
-		
-		if (built)
-			mesh.Clear();
-		
-		mesh.vertices = _vertices.ToArray();
-		mesh.uv = GenerateUv();
-		mesh.triangles = GenerateTris();
-		mesh.RecalculateNormals();
-		mesh.RecalculateBounds();
-		
 
+		if (debug) {
+			Mesh mesh = GetComponent<MeshFilter>().mesh;
+			
+			if (built)
+				mesh.Clear();
+			
+			mesh.vertices = _vertices.ToArray();
+			mesh.uv = GenerateUv();
+			mesh.triangles = GenerateTris();
+			mesh.RecalculateNormals();
+			mesh.RecalculateBounds();
+		
+		}
 		if (foundation)
 			Align();
 		

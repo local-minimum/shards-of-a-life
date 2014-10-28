@@ -93,6 +93,12 @@ public class GroundMaker : MonoBehaviour {
 	private List<Vector3> _topEdge = new List<Vector3>();
 	private List<int> _tris = new List<int>();
 
+	public Vector3[] surface {
+		get {
+			return _topEdge.ToArray();
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 		if (debug) {
@@ -140,12 +146,12 @@ public class GroundMaker : MonoBehaviour {
 		Build();
 	}
 
-	public void Build(TerrainType tType, float length, float stepOrder) {
-		stepChaos = stepOrder;
+	public void Build(TerrainType tType, float length, float chaos) {
+		stepChaos = chaos;
 		Build(tType, length);
 	}
 
-	public void Build(TerrainType tType, float length, float stepOrder, float amplitude) {
+	public void Build(TerrainType tType, float length, float chaos, float amplitude) {
 		switch (terrain) {
 		case TerrainType.Basic:
 			basicAmplitude = amplitude;
@@ -162,7 +168,7 @@ public class GroundMaker : MonoBehaviour {
 		default:
 			break;
 		}
-		Build(tType, length, stepOrder);
+		Build(tType, length, chaos);
 	}
 
 	public void Build() {

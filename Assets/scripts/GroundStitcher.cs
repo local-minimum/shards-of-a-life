@@ -9,23 +9,70 @@ public class GroundStitcher : MonoBehaviour {
 
 	private List<GroundMaker> _segments = new List<GroundMaker>();
 
+	//TODO: This needs a better interface later on...
+	public List<float> terrainAccProbability = new List<float>();
+	public List<GroundMaker.TerrainType> terrainType = new List<GroundMaker.TerrainType>();
+	public List<float> terrainSegmentLengthMin = new List<float>();
+	public List<float> terrainSegmentLengthMax = new List<float>();
+	public List<float> terrainSegmentStepSizeMin = new List<float>();
+	public List<float> terrainSegmentStepSizeMax = new List<float>();
+	public List<float> terrainSegmentStepChaosMin = new List<float>();
+	public List<float> terrainSemgentStepChaosMax = new List<float>();
+	public List<float> terrainSegmentAmplitudeMax = new List<float>();
+	public List<float> terrainSegmentAmplitudeMin = new List<float>();
+
+	private int idGS = 0;
+	private bool _outsideSurfaceSegment = true;
+	public IEnumerable<Vector3> groundSurface() {
+//		Debug.Log(idGS);
+		if (idGS != 0)
+			yield break;
+		int i = 0;
+
+		while(idGS < _segments.Count) {
+			_outsideSurfaceSegment = true;
+			foreach (Vector3 pt in _segments[idGS].surface) { 
+//				Debug.Log(i);
+				yield return pt;
+				_outsideSurfaceSegment = false;
+				i++;
+			}
+			idGS++;
+		}
+		_outsideSurfaceSegment = true;
+		idGS = 0;
+	}
+
+	public GroundMaker.TerrainType groundSurfaceType {
+		get {
+			return _segments[idGS].terrain;
+		}
+	}
+
+	public Transform groundSurfaceTransform {
+		get {
+			return _segments[idGS].transform;
+		}
+	}
+
+	public bool groundInvalidSegment {
+		get {
+			return _outsideSurfaceSegment;
+		}
+	}
 	// Use this for initialization
 	void Start () {
 	
-		/*
-		List<float> stats = new List<float>();
-		for (int i=0; i<100000; i++) {
-			stats.Add(Mathf.PerlinNoise(Random.value * 1000f, Random.value * 1000f));
-		}
-		Debug.Log(stats.Sum() / stats.Count);
-		*/
-		Generate();
-		//Generate();
 	}
 
 	public void Generate() {
 		GroundMaker gm = null;
 		Vector3 nextAnchor = Vector3.zero;
+		while (_segments.Count > segments) {
+			GroundMaker segment = _segments[_segments.Count - 1];
+			_segments.Remove(segment);
+			Destroy(segment.gameObject);
+		}
 
 		for (int i=0; i<segments; i++) {
 			if (_segments.Count < i + 1) {
@@ -37,15 +84,24 @@ public class GroundStitcher : MonoBehaviour {
 				gm = _segments[i];
 
 			gm.debug = debug;
-			gm.Build(GroundMaker.TerrainType.Sloped, 
-			         Random.Range(10f, 40f), Random.Range(0.1f, 1f), Random.Range(1f, 10f));
+
+			float terrainP = terrainAccProbability.Max() * Random.value;
+			int idT = 0;
+			while (terrainP > terrainAccProbability[idT] && idT < terrainAccProbability.Count)
+				idT++;
+
+			gm.stepSize = Random.Range(terrainSegmentStepSizeMin[idT], terrainSegmentStepSizeMax[idT]);
+			gm.Build(terrainType[idT], 
+			         Random.Range(terrainSegmentLengthMin[idT], terrainSegmentLengthMax[idT]),
+			         Random.Range(terrainSegmentStepChaosMin[idT], terrainSegmentLengthMax[idT]), 
+			         Random.Range(terrainSegmentAmplitudeMin[idT], terrainSegmentAmplitudeMax[idT]));
 			nextAnchor -= gm.anchorLeft;
 			gm.transform.position = nextAnchor;
 			nextAnchor += gm.anchorRight;
 
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (debug && Input.GetKeyDown(KeyCode.R))
