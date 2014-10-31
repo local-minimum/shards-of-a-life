@@ -32,10 +32,15 @@ public class CityPlanner : MonoBehaviour {
 		GameObject GO = new GameObject();
 		GO.transform.parent = parentTransform;
 		GO.transform.localPosition = pos;
-		GO.name = string.Format("House {0}", houseId);
+		GO.name = string.Format("House {0} (Block {1})", houseId, parentTransform.name);
 		houseId++;
 		return GO.AddComponent<House>();
 
+	}
+
+	public static void PrepareFoundation(House h, Vector3 pos, Transform parentTransform) {
+		h.transform.parent = parentTransform;
+		h.transform.localPosition = pos;
 	}
 
 
@@ -51,9 +56,9 @@ public class CityPlanner : MonoBehaviour {
 
 		foreach (House h in houses) {
 			Vector3 p = h.transform.localPosition;
-			float w = Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
+			float w = houseWidths[i];//Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
 			p.x += Random.Range(0, houseWidths[i] - w);
-			h.transform.localPosition = p;
+			//h.transform.localPosition = p;
 			if (h.debug)
 				h.setupComponensForDebug();
 			h.Generate(
