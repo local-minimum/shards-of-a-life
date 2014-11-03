@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-public class CityPlanner : MonoBehaviour {
+public class CityPlanner : Object {
 
 	public bool debug = true;
 	public static float stepNorm = 0.1f;
