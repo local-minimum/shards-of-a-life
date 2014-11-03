@@ -2,25 +2,38 @@
 using System.Collections.Generic;
 
 
-public static class CityPlanner : System.Object {
+public class CityPlanner : MonoBehaviour {
 
+	private static CityPlanner _instance;
 
-	public static float stepNorm = 0.1f;
-	public static float stepNoise = 0.025f;
+	public static CityPlanner instance {
+		get {
+			if (_instance == null)
+				_instance = GameObject.FindObjectOfType<CityPlanner>();
+			return _instance;
+		}
+	}
 
-	public static float houseWidthMin = 4f;
-	public static float houseWidthMax = 14f;
+	public Color segmentColor;
+	public Color floorColorA;
+	public Color floorColorB;
 
-	public static int minSegments = 3;
-	public static int maxSegments = 10;
+	public float stepNorm = 0.1f;
+	public float stepNoise = 0.025f;
 
-	public static float minSpacing = 0.5f;
-	public static float maxSpacing = 1f;
-	private static int houseId = 0;
+	public float houseWidthMin = 4f;
+	public float houseWidthMax = 14f;
+
+	public int minSegments = 3;
+	public int maxSegments = 10;
+
+	public float minSpacing = 0.5f;
+	public float maxSpacing = 1f;
+	private int houseId = 0;
 
 	private static void Name(GameObject GO, Transform parentTransform) {
-		GO.name = string.Format("House {0} (Block {1})", houseId, parentTransform.name);
-		houseId++;
+		GO.name = string.Format("House {0} (Block {1})", instance.houseId, parentTransform.name);
+		instance.houseId++;
 	}
 
 	public static House PrepareFoundation(Vector3 pos, Transform parentTransform) {
@@ -43,21 +56,29 @@ public static class CityPlanner : System.Object {
 
 		float _y = Random.Range(0f, 1000f);
 		float _x = Random.Range(0f, 1000f);
-		float _heightVar = (float) (maxSegments - minSegments);
-		float _xStep = Random.Range(stepNorm - stepNoise, stepNorm + stepNoise);
+		float _heightVar = (float) (instance.maxSegments - instance.minSegments);
+		float _xStep = Random.Range(instance.stepNorm - instance.stepNoise,
+		                            instance.stepNorm + instance.stepNoise);
 
 		int i = 0;
-		House prevH = null;
+//		House prevH = null;
 
 		foreach (House h in houses) {
 			Vector3 p = h.transform.localPosition;
-			float w = Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
+			float w = Random.Range(instance.houseWidthMin, 
+			                       houseWidths[i] < instance.houseWidthMax ? 
+			                       houseWidths[i] : instance.houseWidthMax); 
 			p.x += Random.Range(0, houseWidths[i] - w);
+			h.segmentColor = instance.segmentColor;
+			h.interactableColor = Color.Lerp(instance.floorColorA, 
+			                                 instance.floorColorB, Random.value);
 			//h.transform.localPosition = p;
 			if (h.debug)
 				h.setupComponensForDebug();
 			h.Generate(
-				minSegments + Mathf.RoundToInt(_heightVar * Mathf.PerlinNoise(_x + _xStep * h.transform.position.x, _y)),
+				instance.minSegments + 
+				Mathf.RoundToInt(_heightVar * 
+			                 Mathf.PerlinNoise(_x + _xStep * h.transform.position.x, _y)),
 			w);
 			i++;
 		}

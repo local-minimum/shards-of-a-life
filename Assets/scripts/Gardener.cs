@@ -1,29 +1,44 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public static class Gardener : System.Object {
+public class Gardener : MonoBehaviour {
 
-	public static int minRootAnchorPositions = 4;
-	public static int maxRootAnchorPositions = 10;
+	private static Gardener _instance;
+
+	public static Gardener instance {
+
+		get {
+			if (_instance==null)
+				_instance = GameObject.FindObjectOfType<Gardener>();
+			return _instance;
+		}
+	}
+
+	public Color segmentColor;
+	public Color leafColorA;
+	public Color leafColorB;
+
+	public int minRootAnchorPositions = 4;
+	public int maxRootAnchorPositions = 7;
 
 	
-	public static float segmentHeightMin = 1f;
-	public static float segmentHeightMax = 10f;
+	public float segmentHeightMin = 1f;
+	public float segmentHeightMax = 10f;
 
-	public static float segmentLengthVariationMin = 0f;
-	public static float segmentLengthVariationMax = 0.5f;
+	public float segmentLengthVariationMin = 0f;
+	public float segmentLengthVariationMax = 0.5f;
 
-	public static float segmentParallelRoughnessVariationMin = 0f;
-	public static float segmentParallelRoughnessVariationMax = 0.5f;
+	public float segmentParallelRoughnessVariationMin = 0f;
+	public float segmentParallelRoughnessVariationMax = 0.5f;
 
-	public static float segmentRoughnessMin = 0f;
-	public static float segmentRoughnessMax = 0.5f;
+	public float segmentRoughnessMin = 0f;
+	public float segmentRoughnessMax = 0.5f;
 
-	public static float segmentRoughnessFrequencyMin = 0f;
-	public static float segmentRoughnessFrequencyMax = 10f;
+	public float segmentRoughnessFrequencyMin = 0f;
+	public float segmentRoughnessFrequencyMax = 10f;
 
-	public static float segmentTopHVariationMin = 0f;
-	public static float segmentTopHVariationMax = 0.5f;
+	public float segmentTopHVariationMin = 0f;
+	public float segmentTopHVariationMax = 0.5f;
 
 	private static int plantId = 0;
 
@@ -61,14 +76,19 @@ public static class Gardener : System.Object {
 			if (p.debug)
 				p.setupComponensForDebug();
 
-			p.segmentHeight = Random.Range(segmentHeightMin, segmentHeightMax);
-			p.segmentLengthVariation = Random.Range(segmentLengthVariationMin, segmentLengthVariationMax);
-			p.segmentParallelRoughnessVariation = Random.Range(segmentParallelRoughnessVariationMin, segmentParallelRoughnessVariationMax);
-			p.segmentRoughness = Random.Range(segmentRoughnessMin, segmentRoughnessMax);
-			p.segmentRoughnessFrequency = Random.Range(segmentRoughnessFrequencyMin, segmentRoughnessFrequencyMax);
-			p.segmentTopHVariation = Random.Range(segmentTopHVariationMin, segmentTopHVariationMax);
+			p.segmentColor = instance.segmentColor;
+			p.interactableColor = Color.Lerp(instance.leafColorA, instance.leafColorB, Random.value);
+			p.segmentHeight = Random.Range(instance.segmentHeightMin, instance.segmentHeightMax);
+			p.segmentLengthVariation = Random.Range(instance.segmentLengthVariationMin, instance.segmentLengthVariationMax);
+			p.segmentParallelRoughnessVariation = Random.Range(instance.segmentParallelRoughnessVariationMin,
+			                                                   instance.segmentParallelRoughnessVariationMax);
+			p.segmentRoughness = Random.Range(instance.segmentRoughnessMin, instance.segmentRoughnessMax);
+			p.segmentRoughnessFrequency = Random.Range(instance.segmentRoughnessFrequencyMin,
+			                                           instance.segmentRoughnessFrequencyMax);
+			p.segmentTopHVariation = Random.Range(instance.segmentTopHVariationMin,
+			                                      instance.segmentTopHVariationMax);
 			p.baseDirection = baseDirections[i];
-			p.Build(Random.Range(minRootAnchorPositions, maxRootAnchorPositions));
+			p.Build(Random.Range(instance.minRootAnchorPositions, instance.maxRootAnchorPositions));
 			i++;
 		}
 	}
