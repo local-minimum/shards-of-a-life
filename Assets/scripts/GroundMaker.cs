@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
 
-public class GroundMaker : MonoBehaviour {
+public class GroundMaker : Mesher {
 
 	public enum TerrainType {Basic, Ordered, Sloped, Accelerated};
 
@@ -48,8 +48,6 @@ public class GroundMaker : MonoBehaviour {
 	[Range (0f, 1f)]
 	public float stepChaos = 0.1f;
 
-	public Vector2 uvScale = Vector2.one;
-
 	[HideInInspector]
 	[SerializeField]
 	private TerrainType _terrain = TerrainType.Basic;
@@ -90,7 +88,7 @@ public class GroundMaker : MonoBehaviour {
 	private float _renders = 0f;
 	private float _ySeed = 0f;
 	private float _perlinMean = 0.4652489f;
-	private List<Vector3> _vertices = new List<Vector3>();
+
 	private List<Vector3> _topEdge = new List<Vector3>();
 	public Vector3[] surface {
 		get {
@@ -169,14 +167,7 @@ public class GroundMaker : MonoBehaviour {
 		}
 		Build(tType, length, chaos);
 	}
-	private Vector2[] generateUVs() {
-		Vector2[] uvs = new Vector2[_vertices.Count];
-		for (int i=0; i < uvs.Length; i++) {
-			uvs[i].x = _vertices[i].x * uvScale.x;
-			uvs[i].y = _vertices[i].y * uvScale.y;
-		}
-		return uvs;
-	}
+
 
 	public void Build() {
 		_ySeed = Random.value * 100f;
@@ -214,8 +205,8 @@ public class GroundMaker : MonoBehaviour {
 			Mesh mesh = GetComponent<MeshFilter>().mesh;
 			mesh.Clear();
 			mesh.vertices = _vertices.ToArray();
-			mesh.uv = generateUVs();
-			mesh.triangles = Enumerable.Range(0, _vertices.Count).ToArray();
+			mesh.uv = GenerateUv();
+			mesh.triangles = GenerateTris();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			Debug.Log(string.Format("{2}: Ascending f={0} (N={1})", _yStats / _renders, _renders, terrain));

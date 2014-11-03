@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class ObjectGenerator : MonoBehaviour {
+public abstract class ObjectGenerator : Mesher {
 
 	/// <summary>
 	/// Toggle some extra debugging while developing
@@ -48,16 +48,6 @@ public abstract class ObjectGenerator : MonoBehaviour {
 	/// The number of superstructures(i.e. children allowed for a specific slot
 	/// </summary>
 	private List<int> _superStructureSlotsCapacity = new List<int>();
-
-	/// <summary>
-	/// The mesh vertices (used to create mech and report back child's base).
-	/// </summary>
-	protected List<Vector3> _vertices = new List<Vector3>();
-
-	/// <summary>
-	/// The uv scaling for the main material
-	/// </summary>
-	public Vector2 uvScale = Vector2.one;
 
 	/// <summary>
 	/// The segment's depth level in the structure.
@@ -288,27 +278,7 @@ public abstract class ObjectGenerator : MonoBehaviour {
 			}
 		}
 	}
-
-	/// <summary>
-	/// Generates the tris for the mesh
-	/// </summary>
-	/// <returns>The tris.</returns>
-	protected int[] GenerateTris() {
-		return Enumerable.Range(0, _vertices.Count).ToArray();
-	}
-
-	/// <summary>
-	/// Generates the uvs for the mesh.
-	/// </summary>
-	/// <returns>The uv.</returns>
-	protected Vector2[] GenerateUv() {
-		Vector2[] uvs = new Vector2[_vertices.Count];
-		for (int i=0; i < uvs.Length; i++) {
-			uvs[i].x = _vertices[i].x * uvScale.x;
-			uvs[i].y = _vertices[i].y * uvScale.y;
-		}
-		return uvs;
-	}
+	
 
 	/// <summary>
 	/// Generates the vertices.
