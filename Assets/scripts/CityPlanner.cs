@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 
-public class CityPlanner : Object {
+public static class CityPlanner : System.Object {
 
-	public bool debug = true;
+
 	public static float stepNorm = 0.1f;
 	public static float stepNoise = 0.025f;
 
@@ -18,27 +18,22 @@ public class CityPlanner : Object {
 	public static float maxSpacing = 1f;
 	private static int houseId = 0;
 
-	/*
-	List<House> _houses = new List<House>();
-
-	// Use this for initialization
-	void Start () {
-		foreach (GameObject h in GameObject.FindGameObjectsWithTag("House"))
-			_houses.Add(h.GetComponent<House>());
+	private static void Name(GameObject GO, Transform parentTransform) {
+		GO.name = string.Format("House {0} (Block {1})", houseId, parentTransform.name);
+		houseId++;
 	}
-	*/
 
 	public static House PrepareFoundation(Vector3 pos, Transform parentTransform) {
 		GameObject GO = new GameObject();
 		GO.transform.parent = parentTransform;
 		GO.transform.localPosition = pos;
-		GO.name = string.Format("House {0} (Block {1})", houseId, parentTransform.name);
-		houseId++;
+		Name (GO, parentTransform);
 		return GO.AddComponent<House>();
 
 	}
 
 	public static void PrepareFoundation(House h, Vector3 pos, Transform parentTransform) {
+		Name(h.gameObject, parentTransform);
 		h.transform.parent = parentTransform;
 		h.transform.localPosition = pos;
 	}
@@ -56,7 +51,7 @@ public class CityPlanner : Object {
 
 		foreach (House h in houses) {
 			Vector3 p = h.transform.localPosition;
-			float w = houseWidths[i];//Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
+			float w = Random.Range(houseWidthMin, houseWidths[i] < houseWidthMax ? houseWidths[i] : houseWidthMax); 
 			p.x += Random.Range(0, houseWidths[i] - w);
 			//h.transform.localPosition = p;
 			if (h.debug)
