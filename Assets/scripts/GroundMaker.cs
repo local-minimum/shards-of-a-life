@@ -197,7 +197,7 @@ public class GroundMaker : Mesher {
 				Debug.LogWarning(string.Format("{0} has no structure", gameObject.name));
 				return;
 			} else {
-				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
+//				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
 			}
 			_renders += 1f;
 			_yStats += _vertices[_vertices.Count - 3].y > _vertices[1].y ? 1f : 0f;
@@ -240,6 +240,7 @@ public class GroundMaker : Mesher {
 
 	private void _buildGroundFinalize() {
 		while (_vertices.Count % 3 != 0) {
+			_topEdge.Remove(_vertices.Last);
 			_vertices.RemoveAt(_vertices.Count - 1);
 		}
 	}

@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GroundDecorator : MonoBehaviour {
 
 	public float houseProbability = 0.9f;
 	private List<House> houses = new List<House>();
+	private List<Plant> plants = new List<Plant>();
+
 	public bool debug = true;
+	public float plantBaseMaxSlope = 0.3f;
+	public float plantProbability = 0.1f;
 
 	GroundStitcher _stitcher;
 	// Use this for initialization
@@ -32,7 +37,10 @@ public class GroundDecorator : MonoBehaviour {
 		Vector3 lhs = Vector3.zero;
 		bool notInit = true;
 		List<float> houseBaseWidths = new List<float>();
-		int nHouse = 0;
+		List<Vector3> plantBaseDirections = new List<Vector3>();
+
+		int nHouses = 0;
+		int nPlants = 0;
 		int i = -1;
 
 		foreach (Vector3 rhs in _stitcher.groundSurface()) {
@@ -48,26 +56,45 @@ public class GroundDecorator : MonoBehaviour {
 			if (_stitcher.groundSurfaceType == GroundMaker.TerrainType.Ordered & 
 			    (rhs - lhs).magnitude > CityPlanner.houseWidthMin &
 			    Random.value < houseProbability) {
-				if (nHouse < houses.Count) {
-					CityPlanner.PrepareFoundation(houses[nHouse], lhs, _stitcher.groundSurfaceTransform);
+
+				//Produce a house
+				if (nHouses < houses.Count) {
+					CityPlanner.PrepareFoundation(houses[nHouses], lhs, _stitcher.groundSurfaceTransform);
 				} else {
 					houses.Add(CityPlanner.PrepareFoundation(lhs, _stitcher.groundSurfaceTransform));
 				}
-				nHouse++;
+				nHouses++;
 				houseBaseWidths.Add(rhs.x - lhs.x);
-			} else if (_stitcher.groundSurfaceType != GroundMaker.TerrainType.Ordered) {
+			} else if (_stitcher.groundSurfaceType != GroundMaker.TerrainType.Ordered &
+				Mathf.Abs(Vector3.Dot((rhs - lhs).normalized, Vector3.up)) < plantBaseMaxSlope &
+			    Random.value < plantProbability) {
 
+				//Produce a plant/shrub/tree
+				if (nPlants < plants.Count) {
+					Gardener.Seed(plants[nPlants], lhs, _stitcher.groundSurfaceTransform);
+				} else {
+					plants.Add(Gardener.Seed(lhs, _stitcher.groundSurfaceTransform));
+				}
+				nPlants++;
+				plantBaseDirections.Add(rhs - lhs);
 			}
 			lhs = rhs;
 
 		}
 
-		while (houses.Count > nHouse) {
+		while (houses.Count > nHouses) {
 			House h = houses[houses.Count - 1];
 			houses.Remove(h);
 			Destroy(h.gameObject);
 		}
-		CityPlanner.Architect(houses, houseBaseWidths);
 
+		while (plants.Count > nPlants) {
+			Plant p = plants[plants.Count - 1];
+			plants.RemoveAt(plants.Count - 1);
+			Destroy(p.gameObject);
+		}
+
+		CityPlanner.Architect(houses, houseBaseWidths);
+		Gardener.Germinate(plants, plantBaseDirections);
 	}
 }
