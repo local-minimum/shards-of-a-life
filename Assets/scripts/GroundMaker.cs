@@ -240,7 +240,7 @@ public class GroundMaker : Mesher {
 
 	private void _buildGroundFinalize() {
 		while (_vertices.Count % 3 != 0) {
-			_topEdge.Remove(_vertices.Last);
+			_topEdge.Remove(_vertices[_vertices.Count - 1]);
 			_vertices.RemoveAt(_vertices.Count - 1);
 		}
 	}
