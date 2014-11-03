@@ -29,11 +29,15 @@ Status
 * Fragmentation of meshes working
 * Basic input + physics working
 * Disruptive beams
+* Make complete level generation by connecting ground segment generation with object generation (buildings and trees)
+
 
 ToDo
 ----
 
-* Make complete level generation by connecting ground segment generation with object generation (buildings and trees)
+* Make tree generation faster
+* Resolve bug that places houses in bad places
+* Tweak tree parameters
 * Make insect generation
 * Make insect behaviour
 * Make human character
