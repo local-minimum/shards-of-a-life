@@ -158,7 +158,6 @@ public class Plant : ObjectGenerator {
 	/// </summary>
 	protected void GenerateLeafVertices() {
 		V = new Vector3[4];
-		int N = V.Length;
 		Vector3 B = baseDirection * Random.Range(leafLengthVariationMin, leafLengthVariationMax);
 		Vector3 O = Vector3.Cross(B, Vector3.forward) * Random.Range(leafLengthVariationMin, 
 		                                                             leafLengthVariationMax);
@@ -278,12 +277,12 @@ public class Plant : ObjectGenerator {
 		removeAllSuperStructureSlots();
 		base.Build();
 
-		renderer.material.color = _anchorPositions == 0 ? Color.green : Color.grey;
+		renderer.material.color = _anchorPositions == 0 ? interactableColor : segmentColor;
 		Vector3 wp = transform.position;
 		if (_anchorPositions == 0)
 			wp.z = 0f;
 		else
-			wp.z = 1f;
+			wp.z = .1f;
 		transform.position = wp;
 
 		if (_anchorPositions > 0) {

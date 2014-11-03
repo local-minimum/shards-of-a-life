@@ -62,7 +62,7 @@ public class House : ObjectGenerator {
 			z = Vector3.forward * -1f;	
 		} else {
 			isFloorSection = false;
-			z = Vector3.forward;
+			z = foundation != null && ((House) foundation).isFloorSection ? Vector3.forward * 0.1f : Vector3.zero;
 		}
 
 		Vector3 ptLL = z + Vector3.right * Random.Range(-lateralNoise, lateralNoise);
@@ -103,7 +103,8 @@ public class House : ObjectGenerator {
 	public void Build(bool cascade) {
 
 		base.Build();
-		renderer.material.color = isFloorSection ? Color.red : Color.gray;
+
+		renderer.material.color = isFloorSection ? interactableColor : segmentColor;
 
 		//		Debug.Log(string.Format("Built {0}", this));
 		
