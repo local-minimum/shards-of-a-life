@@ -197,6 +197,7 @@ public class GroundMaker : Mesher {
 				Debug.LogWarning(string.Format("{0} has no structure", gameObject.name));
 				return;
 			} else {
+				Debug.Log(stepChaos);
 //				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
 			}
 			_renders += 1f;
@@ -229,18 +230,15 @@ public class GroundMaker : Mesher {
 			_vertices.Add(botPt);
 			_vertices.Add (_vertices[_vertices.Count - 5]);
 
-			
-			if (topPt.x + stepSize <= groundSectionLength) {
-				_vertices.Add (botPt);
-				_vertices.Add (topPt);
-
-			}
+		
+			_vertices.Add (botPt);
+			_vertices.Add (topPt);
 		}
 	}
 
 	private void _buildGroundFinalize() {
 		while (_vertices.Count % 3 != 0) {
-			_topEdge.Remove(_vertices[_vertices.Count - 1]);
+			//Debug.Log(_topEdge.Remove(_vertices[_vertices.Count - 1]));
 			_vertices.RemoveAt(_vertices.Count - 1);
 		}
 	}
@@ -305,8 +303,6 @@ public class GroundMaker : Mesher {
 			}
 			x += stepSize * Random.Range(1f - stepChaos, 1f + stepChaos);
 		}
-		if (_vertices.Count % 3 != 0)
-			_buildGroundIteration(new Vector3(x, elevation));
 		_buildGroundFinalize();
 	}
 
