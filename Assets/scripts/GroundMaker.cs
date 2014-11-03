@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GroundMaker : MonoBehaviour {
 
@@ -91,8 +92,6 @@ public class GroundMaker : MonoBehaviour {
 	private float _perlinMean = 0.4652489f;
 	private List<Vector3> _vertices = new List<Vector3>();
 	private List<Vector3> _topEdge = new List<Vector3>();
-	private List<int> _tris = new List<int>();
-
 	public Vector3[] surface {
 		get {
 			return _topEdge.ToArray();
@@ -170,11 +169,18 @@ public class GroundMaker : MonoBehaviour {
 		}
 		Build(tType, length, chaos);
 	}
+	private Vector2[] generateUVs() {
+		Vector2[] uvs = new Vector2[_vertices.Count];
+		for (int i=0; i < uvs.Length; i++) {
+			uvs[i].x = _vertices[i].x * uvScale.x;
+			uvs[i].y = _vertices[i].y * uvScale.y;
+		}
+		return uvs;
+	}
 
 	public void Build() {
 		_ySeed = Random.value * 100f;
 		_vertices.Clear();
-		_tris.Clear();
 		_topEdge.Clear();
 
 		switch (terrain) {
@@ -194,20 +200,22 @@ public class GroundMaker : MonoBehaviour {
 			Debug.LogError(string.Format("Terrain {0} not implemented", terrain));
 			break;
 		}
-
+		
 		if (debug) {
+			if (_vertices.Count < 6) {
+				Debug.LogWarning(string.Format("{0} has no structure", gameObject.name));
+				return;
+			} else {
+				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
+			}
 			_renders += 1f;
 			_yStats += _vertices[_vertices.Count - 3].y > _vertices[1].y ? 1f : 0f;
-			Vector2[] uvs = new Vector2[_vertices.Count];
-			for (int i=0; i < uvs.Length; i++) {
-				uvs[i].x = _vertices[i].x * uvScale.x;
-				uvs[i].y = _vertices[i].y * uvScale.y;
-			}
+
 			Mesh mesh = GetComponent<MeshFilter>().mesh;
 			mesh.Clear();
 			mesh.vertices = _vertices.ToArray();
-			mesh.uv = uvs;
-			mesh.triangles = _tris.ToArray();
+			mesh.uv = generateUVs();
+			mesh.triangles = Enumerable.Range(0, _vertices.Count).ToArray();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			Debug.Log(string.Format("{2}: Ascending f={0} (N={1})", _yStats / _renders, _renders, terrain));
@@ -221,26 +229,27 @@ public class GroundMaker : MonoBehaviour {
 		if (_vertices.Count == 0) {
 			_vertices.Add(botPt);
 			_vertices.Add(topPt);
-			for (int i=0; i<2; i++)
-				_tris.Add(_tris.Count);
 		} else {
 			_vertices.Add (topPt);
-			_tris.Add(_tris.Count);
+
 		}
 		if (_vertices.Count > 2) {
 			_vertices.Add (topPt);
 			_vertices.Add(botPt);
 			_vertices.Add (_vertices[_vertices.Count - 5]);
-			
-			for (int i=0; i<3; i++)
-				_tris.Add(_tris.Count);
+
 			
 			if (topPt.x + stepSize <= groundSectionLength) {
 				_vertices.Add (botPt);
 				_vertices.Add (topPt);
-				for (int i=0; i<2; i++)
-					_tris.Add(_tris.Count);
+
 			}
+		}
+	}
+
+	private void _buildGroundFinalize() {
+		while (_vertices.Count % 3 != 0) {
+			_vertices.RemoveAt(_vertices.Count - 1);
 		}
 	}
 
@@ -248,77 +257,75 @@ public class GroundMaker : MonoBehaviour {
 		float x = 0f;
 		Vector3 topPt = Vector3.zero;
 		Vector3 botPt = topPt - Vector3.up * thickness;
-		_topEdge.Add(topPt);
+//		_topEdge.Add(topPt);
+//		Debug.Log(string.Format("{0}: Step size {1}", gameObject.name, stepSize));
+//		Debug.Log(string.Format("{0}: Step chaos {1}", gameObject.name, stepChaos));
+//		Debug.Log(string.Format("{0}: Section length {1}", gameObject.name, groundSectionLength));
 
-		while (x <= groundSectionLength) {
+		while (true) {
 
-			if (Random.value < stepChaos || x + stepSize > groundSectionLength) {
-				Vector3 topR = new Vector3(x, topPt.y);
-				Vector3 botR = new Vector3(x, botPt.y);
+			x += stepSize * Random.Range(1f - stepChaos, 1f + stepChaos); // * Random.Range(1f - stepChaos, 1f + stepChaos * orderedAmplitude);
 
-				_topEdge.Add(topR);
-				_vertices.Add(botPt);
-				_vertices.Add(topPt);
-				_vertices.Add(topR);
-				_vertices.Add(topR);
-				_vertices.Add(botR);
-				_vertices.Add(botPt);
-				for (int i=0; i<6; i++)
-					_tris.Add (_tris.Count);
+			if (x > groundSectionLength)
+				break;
 
-				if (x + stepSize < groundSectionLength) {
-					topPt = new Vector3(x, (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * orderedAmplitude + topPt.y);
-					botPt = topPt - Vector3.up * thickness;
-				}
-			}
+			Vector3 topR = new Vector3(x, topPt.y);
+			Vector3 botR = new Vector3(x, botPt.y);
+
+			_topEdge.Add(topPt);
+			_topEdge.Add(topR);
+
+			_vertices.Add(botPt);
+			_vertices.Add(topPt);
+			_vertices.Add(topR);
+			_vertices.Add(topR);
+			_vertices.Add(botR);
+			_vertices.Add(botPt);
+
+			topPt = new Vector3(topR.x, (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * orderedAmplitude + topPt.y);
+			botPt = topPt - Vector3.up * thickness;
 
 
-			x += stepSize;
 		}
 
-		//Debug.Log(_tris.Count);
-		//Debug.Log(_vertices[_vertices.Count - 1]);
+		_buildGroundFinalize();
 	}
 
 	private void _buildGroundSlopedAndAccelerated(bool sloped) {
 		float x = 0f;
-		float slope = 0f;
+		float elevation = 0f;
 		//float y = 0f;
-		float acceleration = 0f;
+		float slope = 0f;
 
 		while (x <= groundSectionLength) {
 			if (_vertices.Count == 0) {
 				_buildGroundIteration(Vector3.zero);
-			} else if (Random.value < stepChaos || x + stepSize > groundSectionLength) {
-				/*
-				if (_vertices.Count == 2) {
-					y = _vertices[1].y;
-				} else {
-					y = _vertices[_vertices.Count - 4].y;
-				}
-				*/
+			} else {
+
 				if (sloped) {
-					slope += (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * slopedAmplitude * stepSize;
+					elevation += (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * slopedAmplitude * stepSize;
 				} else {
-					acceleration += (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * acceleratedAmplitude * stepSize;
-					slope += acceleration;
+					slope += (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * acceleratedAmplitude * stepSize;
+					elevation += slope;
 				}
-				_buildGroundIteration(new Vector3(x, slope));
+				_buildGroundIteration(new Vector3(x, elevation));
 
 			}
-			x += stepSize;
+			x += stepSize * Random.Range(1f - stepChaos, 1f + stepChaos);
 		}
+		if (_vertices.Count % 3 != 0)
+			_buildGroundIteration(new Vector3(x, elevation));
+		_buildGroundFinalize();
 	}
 
 	private void _buildGroundBasic() {
 		float x = 0f;
 
 		while (x <= groundSectionLength) {
-			if (Random.value < stepChaos || x + stepSize > groundSectionLength) {
-				_buildGroundIteration(new Vector3(x, (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * basicAmplitude));
-			}
-			x += stepSize;
+			_buildGroundIteration(new Vector3(x, (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * basicAmplitude));
+			x += stepSize * Random.Range(1f - stepChaos, 1f + stepChaos);
 		}
+		_buildGroundFinalize();
 
 	}
 }

@@ -93,11 +93,11 @@ public class GroundStitcher : MonoBehaviour {
 			gm.stepSize = Random.Range(terrainSegmentStepSizeMin[idT], terrainSegmentStepSizeMax[idT]);
 			gm.Build(terrainType[idT], 
 			         Random.Range(terrainSegmentLengthMin[idT], terrainSegmentLengthMax[idT]),
-			         Random.Range(terrainSegmentStepChaosMin[idT], terrainSegmentLengthMax[idT]), 
+			         Random.Range(terrainSegmentStepChaosMin[idT], terrainSemgentStepChaosMax[idT]), 
 			         Random.Range(terrainSegmentAmplitudeMin[idT], terrainSegmentAmplitudeMax[idT]));
-			nextAnchor -= gm.anchorLeft;
-			gm.transform.position = nextAnchor;
-			nextAnchor += gm.anchorRight;
+			//nextAnchor -= gm.anchorLeft;
+			gm.transform.position = nextAnchor - gm.anchorLeft;
+			nextAnchor = gm.anchorRight + gm.transform.localPosition;
 
 		}
 	}
