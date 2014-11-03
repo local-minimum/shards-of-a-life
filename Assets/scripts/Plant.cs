@@ -120,11 +120,12 @@ public class Plant : ObjectGenerator {
 		if (debug && Input.GetKeyDown(KeyCode.P) && !foundation) {
 			Build(Random.Range(rootAnchorsMin, rootAnchorsMax));
 		}
-		/*
+
 		if (debug & !foundation) {
-			for (int i=0;i<_superStructureSlots.Count;i++)
-				Debug.DrawLine(_vertices[_superStructureSlots[i][0]], Vector3.Cross(_vertices[_superStructureSlots[i][1]] - _vertices[_superStructureSlots[i][0]], Vector3.forward *-1).normalized + _vertices[_superStructureSlots[i][0]]);
-		}*/
+
+			Debug.DrawLine(transform.position + _vertices[0], 
+			               transform.position + _vertices[2]);
+		}
 	}
 
 	/// <summary>
