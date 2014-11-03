@@ -54,7 +54,7 @@ public class GroundDecorator : MonoBehaviour {
 				continue;
 
 			if (_stitcher.groundSurfaceType == GroundMaker.TerrainType.Ordered & 
-			    (rhs - lhs).magnitude > CityPlanner.houseWidthMin &
+			    (rhs - lhs).magnitude > CityPlanner.instance.houseWidthMin &
 			    Random.value < houseProbability) {
 
 				//Produce a house

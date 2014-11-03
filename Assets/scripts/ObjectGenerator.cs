@@ -59,6 +59,9 @@ public abstract class ObjectGenerator : Mesher {
 	/// </summary>
 	protected bool _built = false;
 
+	public Color segmentColor;
+	public Color interactableColor;
+
 	// Adds the needed features to draw the mesh
 	protected void Start () {
 		setupComponensForDebug();
@@ -240,7 +243,12 @@ public abstract class ObjectGenerator : Mesher {
 		}
 		if (foundation)
 			Align();
-		
+
+		if (foundation) {
+			interactableColor = foundation.interactableColor;
+			segmentColor = foundation.segmentColor;
+		}
+
 		_built = true;
 
 	}
