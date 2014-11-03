@@ -59,6 +59,7 @@ public class House : ObjectGenerator {
 		if (foundation && !((House) foundation).isFloorSection && Random.value < 0.85f) {
 			isFloorSection = true;
 			sectionHeight = 0.1f * sectionMin;
+			z = Vector3.forward * -1f;	
 		} else {
 			isFloorSection = false;
 			z = Vector3.forward;
