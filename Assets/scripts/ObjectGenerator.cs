@@ -209,7 +209,7 @@ public abstract class ObjectGenerator : Mesher {
 			if (built)
 				mesh.Clear();
 			
-			mesh.vertices = _vertices.ToArray();
+			mesh.vertices = vertices.ToArray();
 			mesh.uv = GenerateUv();
 			mesh.triangles = GenerateTris();
 			mesh.RecalculateNormals();
@@ -278,13 +278,26 @@ public abstract class ObjectGenerator : Mesher {
 			int[] indices = _superStructureSlots[_superStructures[superStructure]];
 			List<Vector3> anchor = new List<Vector3>();
 			foreach (int i in indices)
-				anchor.Add(_vertices[i]);
+				anchor.Add(vertices[i]);
 //			Debug.Log(string.Format("{0} {1}", anchor[0], anchor[1]));
 			return anchor.ToArray();
 //			return _vertices.Where((v, index) => indices.Contains(index)).OrderBy((Vector3 v, int i) => indices[i]).ToArray();			
 		} else {
 			Debug.LogError(string.Format("{0} is not a known superstucture of {1}", superStructure, this));
 			return new Vector3[2]{Vector3.zero, Vector3.zero};
+		}
+	}
+
+	public IEnumerable<ObjectGenerator> interactables {
+
+		get {
+			if (interactable)
+				yield return this;
+
+			foreach (ObjectGenerator super in _superStructures.Keys) {
+				foreach (ObjectGenerator interA in super.interactables)
+					yield return interA;
+			}
 		}
 	}
 
