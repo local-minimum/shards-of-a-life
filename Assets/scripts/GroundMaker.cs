@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
@@ -23,7 +23,7 @@ public class GroundMaker : Mesher {
 
 		}
 	}
-
+	
 	[Range (1f, 1000f)]
 	public float groundSectionLength = 20f;
 
@@ -122,10 +122,6 @@ public class GroundMaker : Mesher {
 		}
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	}
 
 	public void Build(float length) {
 		groundSectionLength = length;
@@ -171,7 +167,7 @@ public class GroundMaker : Mesher {
 
 	public void Build() {
 		_ySeed = Random.value * 100f;
-		_vertices.Clear();
+		vertices.Clear();
 		_topEdge.Clear();
 
 		switch (terrain) {
@@ -193,7 +189,7 @@ public class GroundMaker : Mesher {
 		}
 		
 		if (debug) {
-			if (_vertices.Count < 6) {
+			if (vertices.Count < 6) {
 				Debug.LogWarning(string.Format("{0} has no structure", gameObject.name));
 				return;
 			} else {
@@ -201,11 +197,11 @@ public class GroundMaker : Mesher {
 //				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
 			}
 			_renders += 1f;
-			_yStats += _vertices[_vertices.Count - 3].y > _vertices[1].y ? 1f : 0f;
+			_yStats += vertices[vertices.Count - 3].y > vertices[1].y ? 1f : 0f;
 
 			Mesh mesh = GetComponent<MeshFilter>().mesh;
 			mesh.Clear();
-			mesh.vertices = _vertices.ToArray();
+			mesh.vertices = vertices.ToArray();
 			mesh.uv = GenerateUv();
 			mesh.triangles = GenerateTris();
 			mesh.RecalculateNormals();
@@ -218,28 +214,28 @@ public class GroundMaker : Mesher {
 	private void _buildGroundIteration(Vector3 topPt) {
 		_topEdge.Add(topPt);
 		Vector3 botPt = topPt - Vector3.up * thickness;
-		if (_vertices.Count == 0) {
-			_vertices.Add(botPt);
-			_vertices.Add(topPt);
+		if (vertices.Count == 0) {
+			vertices.Add(botPt);
+			vertices.Add(topPt);
 		} else {
-			_vertices.Add (topPt);
+			vertices.Add (topPt);
 
 		}
-		if (_vertices.Count > 2) {
-			_vertices.Add (topPt);
-			_vertices.Add(botPt);
-			_vertices.Add (_vertices[_vertices.Count - 5]);
+		if (vertices.Count > 2) {
+			vertices.Add (topPt);
+			vertices.Add(botPt);
+			vertices.Add (vertices[vertices.Count - 5]);
 
 		
-			_vertices.Add (botPt);
-			_vertices.Add (topPt);
+			vertices.Add (botPt);
+			vertices.Add (topPt);
 		}
 	}
 
 	private void _buildGroundFinalize() {
-		while (_vertices.Count % 3 != 0) {
+		while (vertices.Count % 3 != 0) {
 			//Debug.Log(_topEdge.Remove(_vertices[_vertices.Count - 1]));
-			_vertices.RemoveAt(_vertices.Count - 1);
+			vertices.RemoveAt(vertices.Count - 1);
 		}
 	}
 
@@ -265,12 +261,12 @@ public class GroundMaker : Mesher {
 			_topEdge.Add(topPt);
 			_topEdge.Add(topR);
 
-			_vertices.Add(botPt);
-			_vertices.Add(topPt);
-			_vertices.Add(topR);
-			_vertices.Add(topR);
-			_vertices.Add(botR);
-			_vertices.Add(botPt);
+			vertices.Add(botPt);
+			vertices.Add(topPt);
+			vertices.Add(topR);
+			vertices.Add(topR);
+			vertices.Add(botR);
+			vertices.Add(botPt);
 
 			topPt = new Vector3(topR.x, (Mathf.PerlinNoise(x, _ySeed) - _perlinMean) * orderedAmplitude + topPt.y);
 			botPt = topPt - Vector3.up * thickness;
@@ -288,7 +284,7 @@ public class GroundMaker : Mesher {
 		float slope = 0f;
 
 		while (x <= groundSectionLength) {
-			if (_vertices.Count == 0) {
+			if (vertices.Count == 0) {
 				_buildGroundIteration(Vector3.zero);
 			} else {
 

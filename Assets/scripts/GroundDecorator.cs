@@ -95,4 +95,17 @@ public class GroundDecorator : MonoBehaviour {
 		CityPlanner.Architect(houses, houseBaseWidths);
 		Gardener.Germinate(plants, plantBaseDirections);
 	}
+
+	public IEnumerable<Mesher> interactables {
+		get {
+			foreach (Plant p in plants) {
+				foreach (ObjectGenerator i in p.interactables)
+					yield return (Mesher) i;
+			}
+			foreach (House h in houses) {
+				foreach (ObjectGenerator i in h.interactables)
+					yield return (Mesher) i;
+			}
+		}
+	}
 }

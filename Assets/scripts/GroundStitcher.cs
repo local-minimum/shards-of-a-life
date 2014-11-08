@@ -27,7 +27,7 @@ public class GroundStitcher : MonoBehaviour {
 //		Debug.Log(idGS);
 		if (idGS != 0)
 			yield break;
-		int i = 0;
+//		int i = 0;
 
 		while(idGS < _segments.Count) {
 			_outsideSurfaceSegment = true;
@@ -35,12 +35,21 @@ public class GroundStitcher : MonoBehaviour {
 //				Debug.Log(i);
 				yield return pt;
 				_outsideSurfaceSegment = false;
-				i++;
+//				i++;
 			}
 			idGS++;
 		}
 		_outsideSurfaceSegment = true;
 		idGS = 0;
+	}
+
+	public IEnumerable<Mesher> interactables {
+		get {
+			foreach (GroundMaker gm in _segments) {
+				if (gm.interactable)
+					yield return gm;
+			}
+		}
 	}
 
 	public GroundMaker.TerrainType groundSurfaceType {
