@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,7 +53,7 @@ public class House : ObjectGenerator {
 
 	override protected void GenerateVertices ()
 	{
-		_vertices.Clear();
+		vertices.Clear();
 		Vector3 z = Vector3.zero;
 		float sectionHeight = Random.Range(sectionMin, sectionMax);
 		if (foundation && !((House) foundation).isFloorSection && Random.value < 0.85f) {
@@ -64,6 +64,8 @@ public class House : ObjectGenerator {
 			isFloorSection = false;
 			z = foundation != null && ((House) foundation).isFloorSection ? Vector3.forward : Vector3.zero;
 		}
+
+		interactable = isFloorSection;
 
 		Vector3 ptLL = z;
 
@@ -87,12 +89,12 @@ public class House : ObjectGenerator {
 		if (ptUR.x - ptUL.x < foundationMin)
 			ptUR.x = ptUL.x + foundationMin;
 
-		_vertices.Add(ptLL);
-		_vertices.Add(ptUL);
-		_vertices.Add(ptUR);
-		_vertices.Add(ptLL);
-		_vertices.Add(ptUR);
-		_vertices.Add(ptLR);
+		vertices.Add(ptLL);
+		vertices.Add(ptUL);
+		vertices.Add(ptUR);
+		vertices.Add(ptLL);
+		vertices.Add(ptUR);
+		vertices.Add(ptLR);
 
 
 		if (superStructureSlots == 0)

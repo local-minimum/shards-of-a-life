@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Plant : ObjectGenerator {
@@ -117,9 +117,6 @@ public class Plant : ObjectGenerator {
 
 	// This is just temporary for debuging
 	void Update () {
-		if (debug && Input.GetKeyDown(KeyCode.P) && !foundation) {
-			Build(Random.Range(rootAnchorsMin, rootAnchorsMax));
-		}
 
 		if (debug && !foundation) {
 			/*
@@ -170,12 +167,12 @@ public class Plant : ObjectGenerator {
 		V[0] = V[1] - B;
 		V[2] = V[0] + O;
 		V[3] = V[1] + O;
-		_vertices.Add(V[0]);
-		_vertices.Add(V[1]);
-		_vertices.Add(V[2]);
-		_vertices.Add(V[1]);
-		_vertices.Add(V[3]);
-		_vertices.Add(V[2]);
+		vertices.Add(V[0]);
+		vertices.Add(V[1]);
+		vertices.Add(V[2]);
+		vertices.Add(V[1]);
+		vertices.Add(V[3]);
+		vertices.Add(V[2]);
 	}
 
 	/// <summary>
@@ -229,27 +226,27 @@ public class Plant : ObjectGenerator {
 			
 		}
 		
-		_vertices.Add(V[1]);
-		_vertices.Add(V[1+1]);
-		_vertices.Add(V[N-N]);
+		vertices.Add(V[1]);
+		vertices.Add(V[1+1]);
+		vertices.Add(V[N-N]);
 		
 		for (int i=1; i<T; i++) {
 			if (i % 2 == 1) {
-				_vertices.Add(_vertices[_vertices.Count - 2]);
-				_vertices.Add(V[N - 1 - i / 2]);
-				_vertices.Add(_vertices[_vertices.Count - 3]);
-				if (_TestAddAnchor(_vertices[_vertices.Count - 2], _vertices[_vertices.Count -1]))
-					addAnchorage(new int[] {_vertices.Count - 1, _vertices.Count - 2}, 1);
+				vertices.Add(vertices[vertices.Count - 2]);
+				vertices.Add(V[N - 1 - i / 2]);
+				vertices.Add(vertices[vertices.Count - 3]);
+				if (_TestAddAnchor(vertices[vertices.Count - 2], vertices[vertices.Count -1]))
+					addAnchorage(new int[] {vertices.Count - 1, vertices.Count - 2}, 1);
 				if (i == N - 3 && 
-				    _TestAddAnchor(_vertices[_vertices.Count - 3], _vertices[_vertices.Count - 2])) {
-					addAnchorage(new int[] {_vertices.Count - 2, _vertices.Count - 3}, 1);
+				    _TestAddAnchor(vertices[vertices.Count - 3], vertices[vertices.Count - 2])) {
+					addAnchorage(new int[] {vertices.Count - 2, vertices.Count - 3}, 1);
 				}
 			} else {
-				_vertices.Add(_vertices[_vertices.Count - 3]);
-				_vertices.Add(V[2 + i / 2]);
-				_vertices.Add(_vertices[_vertices.Count - 4]);
-				if (_TestAddAnchor(_vertices[_vertices.Count - 3], _vertices[_vertices.Count - 2]))
-					addAnchorage(new int[] {_vertices.Count - 2, _vertices.Count - 3}, 1);
+				vertices.Add(vertices[vertices.Count - 3]);
+				vertices.Add(V[2 + i / 2]);
+				vertices.Add(vertices[vertices.Count - 4]);
+				if (_TestAddAnchor(vertices[vertices.Count - 3], vertices[vertices.Count - 2]))
+					addAnchorage(new int[] {vertices.Count - 2, vertices.Count - 3}, 1);
 				
 			}
 			
@@ -261,14 +258,14 @@ public class Plant : ObjectGenerator {
 	/// </summary>
 	protected override void GenerateVertices ()
 	{
-		_vertices.Clear();
+		vertices.Clear();
 
 		if (_anchorPositions < 1) {
-
+			interactable = true;
 			GenerateLeafVertices();
 
 		} else {
-
+			interactable = false;
 			GenerateSegmentVertices();
 
 		}
