@@ -1,10 +1,11 @@
 #Issues
 
 * Floating objects
-  * Look at & and && logic in decision to generate.
+  
 
 * Tree shapes
   * Make length function of base width
+  * Disallow world coord too much down growth
 
 * Make generation faster
   * Allow non-interactables belong to same mesh to cut instanciation of MonoBehaviours drastically
