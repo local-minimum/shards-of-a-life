@@ -17,7 +17,7 @@ public abstract class ObjectGenerator : Mesher {
 	/// <summary>
 	/// The base rotation (set via base direction)
 	/// </summary>
-	private Vector3 _baseRotation = Vector3.right;
+	private Vector3 _baseDirection = Vector3.right;
 
 	/// <summary>
 	/// The parent of the current segment (null if root)
@@ -28,11 +28,6 @@ public abstract class ObjectGenerator : Mesher {
 	/// The width of the base of the segment (only settable for the root and -1 if not specified/to be randomized).
 	/// </summary>
 	private float _baseWidth = -1f;
-
-	/// <summary>
-	/// Deprecated, use <c>_baseRotation</c> or <c>baseDirection</c> instead
-	/// </summary>
-	private float _baseElevation = 0f;
 
 	/// <summary>
 	/// All depenent structures as keys and the lookup index for their base vertices as value
@@ -161,13 +156,12 @@ public abstract class ObjectGenerator : Mesher {
 	public float baseWidth {
 		get {
 			if (foundation) {
-				Vector3[] anchor = anchorage;
-				return Vector3.Magnitude(anchor[1] - anchor[0]);
+				return baseDirection.magnitude;
 			} else if (_baseWidth > 0f)
 				return _baseWidth;
 			else {
-				_baseWidth = Random.Range(4f, 10f);
-				return _baseWidth;
+				Debug.LogError("No valid base width set or obtainable");
+				return -999f;
 			}
 		}
 		
@@ -179,26 +173,7 @@ public abstract class ObjectGenerator : Mesher {
 			}
 		}
 	}
-
-	//TODO: Remove and only use baseDirection
-	public float baseElevation {
-		get {
-			if (foundation) {
-				Vector3[] anchor = anchorage;
-				return anchor[1].y - anchor[0].y; 
-			} else
-				return _baseElevation;
-		}
-		
-		set {
-			
-			if (foundation) {
-				Debug.LogWarning("Base Elevation not applicable above foundation section");
-			} else {
-				_baseElevation = value;
-			}
-		}
-	}
+	
 
 	/// <summary>
 	/// Gets or sets (only allowed for root) the base direction.
@@ -208,9 +183,9 @@ public abstract class ObjectGenerator : Mesher {
 		get {
 			if (foundation) {
 				Vector3[] anchor = anchorage;
-				return (anchor[0] - anchor[1]);
+				return (anchor[1] - anchor[0]);
 			} else {
-				return _baseRotation;
+				return _baseDirection;
 			}
 		}
 
@@ -218,7 +193,7 @@ public abstract class ObjectGenerator : Mesher {
 			if (foundation)
 				Debug.LogWarning("Can't set base direction on other things than the root");
 			else
-				_baseRotation = value;
+				_baseDirection = value;
 		}
 	}
 
@@ -299,9 +274,15 @@ public abstract class ObjectGenerator : Mesher {
 	/// <returns>The anchorage.</returns>
 	/// <param name="superStructure">Super structure.</param>
 	public Vector3[] getAnchorage(ObjectGenerator superStructure) {
-		if (_superStructures.ContainsKey(superStructure)) 
-			return _vertices.Where((v, index) => _superStructureSlots[_superStructures[superStructure]].Contains(index)).ToArray();			
-		else {
+		if (_superStructures.ContainsKey(superStructure)) {
+			int[] indices = _superStructureSlots[_superStructures[superStructure]];
+			List<Vector3> anchor = new List<Vector3>();
+			foreach (int i in indices)
+				anchor.Add(_vertices[i]);
+//			Debug.Log(string.Format("{0} {1}", anchor[0], anchor[1]));
+			return anchor.ToArray();
+//			return _vertices.Where((v, index) => indices.Contains(index)).OrderBy((Vector3 v, int i) => indices[i]).ToArray();			
+		} else {
 			Debug.LogError(string.Format("{0} is not a known superstucture of {1}", superStructure, this));
 			return new Vector3[2]{Vector3.zero, Vector3.zero};
 		}

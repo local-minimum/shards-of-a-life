@@ -4,12 +4,12 @@ using System.Linq;
 
 public class House : ObjectGenerator {
 
-	public float lateralNoise = 0.1f;
+	public float lateralNoise = 0.05f;
 	public float offsetNoise = 1f;
-	public float foundationNoise = 2f;
+	public float foundationNoise = .2f;
 	public float foundationMin = 2f;
 	public float sectionMin = 3f;
-	public float sectionMax = 4f;
+	public float sectionMax = 5f;
 
 	public bool isFloorSection = false;
 	
@@ -58,28 +58,31 @@ public class House : ObjectGenerator {
 		float sectionHeight = Random.Range(sectionMin, sectionMax);
 		if (foundation && !((House) foundation).isFloorSection && Random.value < 0.85f) {
 			isFloorSection = true;
-			sectionHeight = 0.1f * sectionMin;
+			sectionHeight = 0.1f * sectionHeight;
 			z = Vector3.forward * -1f;	
 		} else {
 			isFloorSection = false;
-			z = foundation != null && ((House) foundation).isFloorSection ? Vector3.forward * 0.1f : Vector3.zero;
+			z = foundation != null && ((House) foundation).isFloorSection ? Vector3.forward : Vector3.zero;
 		}
 
-		Vector3 ptLL = z + Vector3.right * Random.Range(-lateralNoise, lateralNoise);
+		Vector3 ptLL = z;
 
 		if (foundation)
 			ptLL.x += Random.Range(-offsetNoise, offsetNoise);
 
-		Vector3 ptLR = ptLL + Vector3.up * baseElevation + Vector3.right * (baseWidth + Random.Range(-lateralNoise, lateralNoise));
+		Vector3 ptLR = ptLL + baseDirection.normalized * baseWidth;
+//		Debug.Log(string.Format("{0}  {1}  {2}", name, segmentLevel, baseWidth));
 
 		if (foundation)
-			ptLR.x += Random.Range(-foundationNoise, foundationNoise);
+			ptLR.x += Random.Range(-lateralNoise, lateralNoise);
 
-		if (ptLR.x - ptLL.x < foundationMin)
+		if (ptLR.x - ptLL.x < foundationMin) {
+			Debug.Log(string.Format("{0}  {1}  {2} vs {3}", name, segmentLevel, baseWidth, ptLR.x - ptLL.x));
 			ptLR.x = ptLL.x + foundationMin;
+		}
 
-		Vector3 ptUL = ptLL + Vector3.up * sectionHeight + Vector3.right * Random.Range(-lateralNoise, lateralNoise);
-		Vector3 ptUR = ptUL + Vector3.right * (ptLR.x - ptLL.x + Random.Range(-lateralNoise, lateralNoise));
+		Vector3 ptUL = ptLL + Vector3.up * sectionHeight + Vector3.right * Random.Range(-lateralNoise, lateralNoise) * sectionHeight;
+		Vector3 ptUR = ptLR + Vector3.up * (ptUL.y - ptLL.y) +  Vector3.right * Random.Range(-lateralNoise, lateralNoise) * sectionHeight;
 
 		if (ptUR.x - ptUL.x < foundationMin)
 			ptUR.x = ptUL.x + foundationMin;
@@ -91,7 +94,9 @@ public class House : ObjectGenerator {
 		_vertices.Add(ptUR);
 		_vertices.Add(ptLR);
 
-		addAnchorage(new int[] {1, 2}, 1);
+
+		if (superStructureSlots == 0)
+			addAnchorage(new int[] {1, 2}, 1);
 
 	}
 

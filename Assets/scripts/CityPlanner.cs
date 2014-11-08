@@ -69,6 +69,8 @@ public class CityPlanner : MonoBehaviour {
 			                       houseWidths[i] < instance.houseWidthMax ? 
 			                       houseWidths[i] : instance.houseWidthMax); 
 			p.x += Random.Range(0, houseWidths[i] - w);
+			h.baseWidth = w;
+			h.baseDirection = Vector3.right;
 			h.segmentColor = instance.segmentColor;
 			h.interactableColor = Color.Lerp(instance.floorColorA, 
 			                                 instance.floorColorB, Random.value);
