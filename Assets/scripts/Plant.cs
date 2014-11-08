@@ -76,7 +76,7 @@ public class Plant : ObjectGenerator {
 	/// <summary>
 	/// Horisontal offset relative to base width end can have.
 	/// </summary>
-	public float segmentTopHVariation = 0.15f;
+	public float segmentTopHorisontalVar = 0.15f;
 
 	/// <summary>
 	/// Variation relative to expected length current segments extremes can have
@@ -121,10 +121,14 @@ public class Plant : ObjectGenerator {
 			Build(Random.Range(rootAnchorsMin, rootAnchorsMax));
 		}
 
-		if (debug & !foundation) {
-
+		if (debug && !foundation) {
+			/*
 			Debug.DrawLine(transform.position + _vertices[0], 
 			               transform.position + _vertices[2]);
+
+			Debug.DrawLine(transform.position,
+			               transform.position + baseDirection, Color.blue);
+*/
 		}
 	}
 
@@ -146,11 +150,11 @@ public class Plant : ObjectGenerator {
 		Debug.Log("===");
 		Debug.Log((A-B).magnitude);
 		Debug.Log(baseDirection.magnitude);*/
-		return (_anchorPositions > 0 &
-		        Random.value < Vector3.Lerp(A, B, 0.5f).magnitude / segmentHeight * 0.75f &
+		return (_anchorPositions > 0 &&
+		        Random.value < Vector3.Lerp(A, B, 0.5f).magnitude / segmentHeight * 0.75f &&
 		        (superStructureSlots < _anchorPositions ? 
-		        	true : Random.value / (superStructureSlots - _anchorPositions) < 0.5f) &
-		        (A - B).magnitude < baseDirection.magnitude * growthChildBaseTolerance &
+		        	true : Random.value / (superStructureSlots - _anchorPositions) < 0.5f) &&
+		        (A - B).magnitude < baseDirection.magnitude * growthChildBaseTolerance &&
 		        Vector3.Dot((A - B).normalized, Vector3.right) < growthDownTolerance);
 	}
 
@@ -198,16 +202,17 @@ public class Plant : ObjectGenerator {
 		int N = V.Length;
 		int T = N - 2;
 		if (foundation) {
-			V[0] = anchorage[1] - anchorage[0];
+			Vector3[] anchor = anchorage;
+			V[0] = anchor[0] - anchor[1];
 			V[1] = Vector3.zero;
 		} else {
 			V[1] = Vector3.zero;
 			V[0] = Vector3.right * rootBaseWidth * Random.Range(1f-rootBaseWidthVariation, 1f+rootBaseWidthVariation);
-			baseDirection = V[0];
+			//baseDirection = V[0];
 		}
 		
 		for (int i=0; i<2; i++) {
-			V[N / 2 + 1 - i] = V[i] + B * Random.Range(-segmentTopHVariation, segmentTopHVariation)
+			V[N / 2 + 1 - i] = V[i] + B * Random.Range(-segmentTopHorisontalVar, segmentTopHorisontalVar)
 				+ upTarget * Random.Range(1f - segmentLengthVariation,
 				                          1f + segmentLengthVariation); 
 		}
@@ -234,17 +239,17 @@ public class Plant : ObjectGenerator {
 				_vertices.Add(V[N - 1 - i / 2]);
 				_vertices.Add(_vertices[_vertices.Count - 3]);
 				if (_TestAddAnchor(_vertices[_vertices.Count - 2], _vertices[_vertices.Count -1]))
-					addAnchorage(new int[] {_vertices.Count - 2, _vertices.Count - 1}, 1);
-				if (i == N - 3 & 
+					addAnchorage(new int[] {_vertices.Count - 1, _vertices.Count - 2}, 1);
+				if (i == N - 3 && 
 				    _TestAddAnchor(_vertices[_vertices.Count - 3], _vertices[_vertices.Count - 2])) {
-					addAnchorage(new int[] {_vertices.Count - 3, _vertices.Count - 2}, 1);
+					addAnchorage(new int[] {_vertices.Count - 2, _vertices.Count - 3}, 1);
 				}
 			} else {
 				_vertices.Add(_vertices[_vertices.Count - 3]);
 				_vertices.Add(V[2 + i / 2]);
 				_vertices.Add(_vertices[_vertices.Count - 4]);
 				if (_TestAddAnchor(_vertices[_vertices.Count - 3], _vertices[_vertices.Count - 2]))
-					addAnchorage(new int[] {_vertices.Count - 3, _vertices.Count - 2}, 1);
+					addAnchorage(new int[] {_vertices.Count - 2, _vertices.Count - 3}, 1);
 				
 			}
 			
@@ -326,7 +331,7 @@ public class Plant : ObjectGenerator {
 	/// </summary>
 	/// <param name="child">Child.</param>
 	private void updateChild(Plant child) {
-		if (foundation != null & Random.value < nonRootOnlyLeafP) {
+		if (foundation != null && Random.value < nonRootOnlyLeafP) {
 			child._anchorPositions = 0;
 		} else {
 			child._anchorPositions = _anchorPositions - Random.Range(childAnchorLossMin, 

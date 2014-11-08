@@ -37,8 +37,11 @@ public class Gardener : MonoBehaviour {
 	public float segmentRoughnessFrequencyMin = 0f;
 	public float segmentRoughnessFrequencyMax = 10f;
 
-	public float segmentTopHVariationMin = 0f;
-	public float segmentTopHVariationMax = 0.5f;
+	public float segmentTopHorisontalVarMin = 0f;
+	public float segmentTopHorisontalVarMax = 0.5f;
+
+	public float rootBaseMin = 0.5f;
+	public float rootBaseMax = 1f;
 
 	private static int plantId = 0;
 
@@ -78,16 +81,19 @@ public class Gardener : MonoBehaviour {
 
 			p.segmentColor = instance.segmentColor;
 			p.interactableColor = Color.Lerp(instance.leafColorA, instance.leafColorB, Random.value);
-			p.segmentHeight = Random.Range(instance.segmentHeightMin, instance.segmentHeightMax);
 			p.segmentLengthVariation = Random.Range(instance.segmentLengthVariationMin, instance.segmentLengthVariationMax);
 			p.segmentParallelRoughnessVariation = Random.Range(instance.segmentParallelRoughnessVariationMin,
 			                                                   instance.segmentParallelRoughnessVariationMax);
 			p.segmentRoughness = Random.Range(instance.segmentRoughnessMin, instance.segmentRoughnessMax);
 			p.segmentRoughnessFrequency = Random.Range(instance.segmentRoughnessFrequencyMin,
 			                                           instance.segmentRoughnessFrequencyMax);
-			p.segmentTopHVariation = Random.Range(instance.segmentTopHVariationMin,
-			                                      instance.segmentTopHVariationMax);
-			p.baseDirection = baseDirections[i];
+			p.segmentTopHorisontalVar = Random.Range(instance.segmentTopHorisontalVarMin,
+			                                      instance.segmentTopHorisontalVarMax);
+			p.baseDirection = baseDirections[i] * Random.Range(instance.rootBaseMin, instance.rootBaseMax);
+			if (p.baseDirection.magnitude > baseDirections[i].magnitude)
+				p.baseDirection = baseDirections[i];
+			p.segmentHeight = p.baseDirection.magnitude * Random.Range(instance.segmentHeightMin, instance.segmentHeightMax);
+
 			p.Build(Random.Range(instance.minRootAnchorPositions, instance.maxRootAnchorPositions));
 			i++;
 		}
