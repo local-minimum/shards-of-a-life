@@ -7,7 +7,7 @@ public class LevelBuilder : MonoBehaviour {
 
 	public enum BuildOrder {X, X_REV, Y, Y_REV, Z, Z_REV, EDITOR, RANDOM};
 
-	public string buildTag = "Templater";
+//	public string buildTag = "Templater";
 	public GameObject BuildTemplateLvl;
 	public GameObject BuildTemplatePl;
 	public GameObject[] players;
@@ -56,33 +56,41 @@ public class LevelBuilder : MonoBehaviour {
 
 	private bool _ready = false;
 
-	private List<GameObject> _templates = new List<GameObject>();
+	private List<Mesher> _templates = new List<Mesher>();
 	private bool[] _templateReady;
 
 	public List<GUIText> introTexts = new List<GUIText>();
 
+	private GroundStitcher _groundStitcher;
+	private GroundDecorator _groundDecorator;
+
 	// Use this for initialization
 	void Start () {
-		_SetTemplates();
-		StartCoroutine(_DressLevel());
+		_groundStitcher = gameObject.GetComponent<GroundStitcher>();
+		_groundDecorator = gameObject.GetComponent<GroundDecorator>();
 	}
 
 	private void _SetTemplates() {
-		_templates.AddRange(GameObject.FindGameObjectsWithTag(buildTag));
+//		_templates.AddRange(GameObject.FindGameObjectsWithTag(buildTag));
+		_templates.Clear();
+		_templates.AddRange(_groundStitcher.interactables);
+		_templates.AddRange(_groundDecorator.interactables);
+
 		_templateReady = new bool[_templates.Count];
 
-		foreach (GameObject _t in _templates)
-			_t.renderer.enabled = false;
+		foreach (Mesher m in _templates)
+			m.renderer.enabled = false;
 
 		if (debug)
-			Debug.Log (string.Format("Found {0}", _templates.Count));
+			Debug.Log (string.Format("Found {0} interactables", _templates.Count));
+
 		switch (buildOrder) {
 		case BuildOrder.RANDOM:
 			for (int i = 0; i < _templates.Count; i++) {
-				GameObject temp = _templates[i];
+				Mesher m = _templates[i];
 				int randomIndex = Random.Range(i, _templates.Count);
 				_templates[i] = _templates[randomIndex];
-				_templates[randomIndex] = temp;
+				_templates[randomIndex] = m;
 			}
 			break;
 		case BuildOrder.X:
@@ -103,7 +111,6 @@ public class LevelBuilder : MonoBehaviour {
 		case BuildOrder.Z_REV:
 			_templates.Sort((A, B) => B.transform.position.z.CompareTo(A.transform.position.z));
 			break;
-
 		default:
 			break;
 		}
@@ -129,13 +136,47 @@ public class LevelBuilder : MonoBehaviour {
 		return pt;
 	}
 
-	private IEnumerator<WaitForSeconds> DressTemplate(GameObject template, int idT) {
+	private IEnumerator<WaitForSeconds> DressTemplate(Mesher template, int idT) {
 		_templateReady[idT] = false;
 		IEnumerator<WaitForSeconds> ie = DressTemplate(template, 1f);
 		while (ie.MoveNext()) {
 			yield return ie.Current;
 		}
 		_templateReady[idT] = true;
+	}
+
+	public IEnumerator<WaitForSeconds> DressTemplate(Mesher template, float globalScale) {
+		
+		float scaler = BuildTemplateLvl.GetComponent<CircleCollider2D>().radius * 2f;
+		Mesh m = template.GetComponent<MeshFilter>().mesh;
+		bool nonCollidable = template.gameObject.layer == LayerMask.NameToLayer("Non-collidables");
+
+		if (debug)
+			Debug.Log (string.Format("Dressing {0}", template, scaler));
+		
+		if (!m) {
+			Debug.LogError(string.Format("Template {0} lacks mesh", template));
+
+		} else {
+			float Aref = scaler * BuildTemplateLvl.transform.lossyScale.magnitude;
+			//Debug.Log(string.Format("Builder {0}x{1} scale {2}", refV.x, refV.y, BuildTemplate.transform.lossyScale.magnitude));
+			List<Vector3> verts = template.vertices;
+			int[] tris = template.GenerateTris();
+			bool[] allDone = new bool[tris.Count() / 3];
+			
+			if (!template.rigidbody2D) {
+				template.gameObject.AddComponent<Rigidbody2D>();
+				template.rigidbody2D.isKinematic = true;
+			}
+			
+			
+			for (int i=0, l = tris.Length; i<l; i+=3) {
+				StartCoroutine(DressTri(verts[tris[i]], verts[tris[i + 1]], verts[tris[i + 2]], template.gameObject, Aref, nonCollidable, allDone, i/3, globalScale, BuildTemplateLvl));
+			}
+			
+			while (allDone.Any(e => !e))
+				yield return new WaitForSeconds(interOrderDelay);
+		}
 	}
 
 	public static IEnumerator<WaitForSeconds> DressTri(Vector3 v0, Vector3 v1, Vector3 v2, GameObject template,
@@ -166,7 +207,7 @@ public class LevelBuilder : MonoBehaviour {
 			//POSITION
 			o.transform.parent = template.transform;
 			o.transform.localPosition = RndTriPt(v1, v2) + v0;
-			
+
 			
 			//JOINT
 			SpringJoint2D j2d = o.GetComponent<SpringJoint2D>();
@@ -198,39 +239,6 @@ public class LevelBuilder : MonoBehaviour {
 		}
 		
 		isDone[idDone] = true;
-	}
-	
-	public IEnumerator<WaitForSeconds> DressTemplate(GameObject template, float globalScale) {
-
-		float scaler = BuildTemplateLvl.GetComponent<CircleCollider2D>().radius * 2f;
-		Mesh m = template.GetComponent<MeshFilter>().mesh;
-		bool nonCollidable = template.layer == LayerMask.NameToLayer("Non-collidables");
-
-		if (debug)
-			Debug.Log (string.Format("Dressing {0}", template, scaler));
-
-		if (!m) {
-			Debug.LogError(string.Format("Template {0} lacks mesh", template));
-		} else {
-			float Aref = scaler * BuildTemplateLvl.transform.lossyScale.magnitude;
-			//Debug.Log(string.Format("Builder {0}x{1} scale {2}", refV.x, refV.y, BuildTemplate.transform.lossyScale.magnitude));
-			Vector3[] verts = m.vertices;
-			int[] tris = m.triangles;
-			bool[] allDone = new bool[tris.Count() / 3];
-
-			if (!template.rigidbody2D) {
-				template.AddComponent<Rigidbody2D>();
-				template.rigidbody2D.isKinematic = true;
-			}
-
-
-			for (int i=0, l = tris.Length; i<l; i+=3) {
-				StartCoroutine(DressTri(verts[tris[i]], verts[tris[i + 1]], verts[tris[i + 2]], template, Aref, nonCollidable, allDone, i/3, globalScale, BuildTemplateLvl));
-			}
-
-			while (allDone.Any(e => !e))
-				yield return new WaitForSeconds(interOrderDelay);
-		}
 	}
 
 	private void _ReadyPlayers() {
@@ -302,6 +310,10 @@ public class LevelBuilder : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-	
+		if (Input.GetKeyDown(KeyCode.S)) {
+			_SetTemplates();
+			StartCoroutine(_DressLevel());
+		}
+
 	}
 }
