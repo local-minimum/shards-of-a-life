@@ -197,7 +197,7 @@ public class GroundMaker : Mesher {
 				Debug.LogWarning(string.Format("{0} has no structure", gameObject.name));
 				return;
 			} else {
-				Debug.Log(stepChaos);
+//				Debug.Log(stepChaos);
 //				Debug.Log(string.Format("{0} has {1} triangles", gameObject.name, _vertices.Count / 3));
 			}
 			_renders += 1f;
