@@ -45,18 +45,16 @@ public class GroundDecorator : MonoBehaviour {
 
 		foreach (Vector3 rhs in _stitcher.groundSurface()) {
 			i++;
-			if (notInit) {
+			if (notInit || _stitcher.groundInvalidSegment || lhs.x >= rhs.x) {
 				lhs = rhs;
-				notInit = false;
+				if (notInit)
+					notInit = false;
 				continue;
 			}
-			if (_stitcher.groundInvalidSegment)
-				continue;
 
-			if (_stitcher.groundSurfaceType == GroundMaker.TerrainType.Ordered & 
-			    (rhs - lhs).magnitude > CityPlanner.instance.houseWidthMin &
+			if (_stitcher.groundSurfaceType == GroundMaker.TerrainType.Ordered && 
+			    (rhs.x - lhs.x) > CityPlanner.instance.houseWidthMin &&
 			    Random.value < houseProbability) {
-
 				//Produce a house
 				if (nHouses < houses.Count) {
 					CityPlanner.PrepareFoundation(houses[nHouses], lhs, _stitcher.groundSurfaceTransform);
@@ -65,8 +63,8 @@ public class GroundDecorator : MonoBehaviour {
 				}
 				nHouses++;
 				houseBaseWidths.Add(rhs.x - lhs.x);
-			} else if (_stitcher.groundSurfaceType != GroundMaker.TerrainType.Ordered &
-				Mathf.Abs(Vector3.Dot((rhs - lhs).normalized, Vector3.up)) < plantBaseMaxSlope &
+			} else if (_stitcher.groundSurfaceType != GroundMaker.TerrainType.Ordered &&
+				Mathf.Abs(Vector3.Dot((rhs - lhs).normalized, Vector3.up)) < plantBaseMaxSlope &&
 			    Random.value < plantProbability) {
 
 				//Produce a plant/shrub/tree
