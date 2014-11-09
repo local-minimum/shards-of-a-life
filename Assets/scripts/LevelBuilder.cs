@@ -35,6 +35,9 @@ public class LevelBuilder : MonoBehaviour {
 	[Range(1f, 10f)]
 	public static float templateUpperScale = 1.5f;
 
+	[Range(0f, 1f)]
+	public static float templateColorVariation = 0.2f;
+
 	public bool renderInEditor {
 		get {
 			return _renderInEditor;
@@ -225,8 +228,10 @@ public class LevelBuilder : MonoBehaviour {
 			}
 			
 			//MATERIAL
-			o.renderer.material.color = template.renderer.material.color;
-			o.renderer.material.SetColor("_Emission", template.renderer.material.color);
+			o.renderer.material.color = template.renderer.material.color +
+				Color.white * template.renderer.material.color.grayscale * 
+					Random.Range(-templateColorVariation, templateColorVariation);
+//			o.renderer.material.SetColor("_Emission", template.renderer.material.color);
 			
 			//SHAKE
 			if (o.rigidbody)
