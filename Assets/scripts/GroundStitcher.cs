@@ -7,6 +7,9 @@ public class GroundStitcher : MonoBehaviour {
 	public bool debug = true;
 	public int segments = 10;
 
+	public Transform levelTarget;
+	public Vector3 levelTargetOffset;
+
 	private List<GroundMaker> _segments = new List<GroundMaker>();
 
 	//TODO: This needs a better interface later on...
@@ -109,6 +112,7 @@ public class GroundStitcher : MonoBehaviour {
 			nextAnchor = gm.anchorRight + gm.transform.localPosition;
 
 		}
+		levelTarget.position = nextAnchor + levelTargetOffset;
 	}
 
 	// Update is called once per frame
