@@ -80,7 +80,11 @@ public class Level : MonoBehaviour {
 		_distance = _endX - _startX;
 	}
 
-	public void GameOver() {
+	public void LevelEndDeath() {
+		Application.LoadLevel(Application.loadedLevel);
+	}
+
+	public void LevelEndTarget() {
 		Application.LoadLevel(Application.loadedLevel);
 	}
 	
