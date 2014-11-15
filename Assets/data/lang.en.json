@@ -1,0 +1,86 @@
+{
+	"lang": "en",
+	"sounds_base_directory" : "Assets/sounds/narration/en/",
+	"sounds_file_endings" : ".ogg",
+	
+	"events": {
+		"first_morning" : [
+			{
+				"sound" : ["firstMorning1a", "fistMorning1b"],
+				"text" : ["It's morning", "Another attempt at making it to day's end in one piece"]
+			},
+			{
+				"sound" : ["firstMorning2a", "firstMorning2b"],
+				"text" : ["Apparently the world is ready for a new day", "I'm not sure I am"]
+			}
+		],
+		
+		"morning" : [],
+		
+		"noon" : [],
+		
+		"evening": [],
+
+		"jumping" : [],
+		
+		"waiting" : [],
+		
+		"going_back" : [],
+		
+		"trees" : [],
+		
+		"tree_climbing" : [],
+		
+		"houses" : [],
+		
+		"house_climbing": [],
+		
+		"humans" : [],
+		
+		"insects" : [],
+		
+		"void" : [],
+		
+		"shatter_self" : [],
+		
+		"shatter_world" : [],
+		
+		"death" : [],
+		
+		"death_by_fall" : [],
+		
+		"death_by_insect" : [],
+		
+		"death_by_human" : [],
+		
+		"death_by_time" : [],
+		
+		"sleeping" : [],
+		
+		"pausing" : []
+	},
+	
+	"settings_events" : {
+		"level_length" : [
+			[
+			{
+				"value" : 2,
+				"sound" : ["levelLength1.1a", "levelLength1.1b"],
+				"text" : ["Though it hardly was cause for celebration, the day had not been too scary.", "Only dull."]
+			},
+			{
+				"value": 0,
+				"sound": ["levelLength1.2a", "levelLength1.2b", "levelLength1.2c"],
+				"text" : ["It had been a terrible experience, just like always", "I should be happy to still be alive", "I don't feel happy"]
+			}
+			]
+		]
+	},
+	
+	"menu" : {
+		"play" : "Play",
+		"pause" : "Pause",
+		"resume" : "Resume",
+		"quit" : "Quit",
+	}
+}
