@@ -1,0 +1,13 @@
+{
+	"lang": "en",
+	"sounds base directory" : "Assets/sounds/narration/en/",
+
+	"events": {
+		"first morning" : [
+			{
+				"sound" : "firstMorning.ogg",
+				"text" : ["It's morning", "Another attempt at making it to day's end in one piece"]
+			}
+		]
+	}
+}
