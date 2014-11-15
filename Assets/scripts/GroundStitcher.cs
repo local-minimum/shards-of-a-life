@@ -116,10 +116,11 @@ public class GroundStitcher : MonoBehaviour {
 	}
 
 	// Update is called once per frame
+	/*
 	void Update () {
 		if (debug && Input.GetKeyDown(KeyCode.R))
 			Generate();
-	}
+	}*/
 
 	public GroundMaker[] GetSegments() {
 		return _segments.ToArray();
