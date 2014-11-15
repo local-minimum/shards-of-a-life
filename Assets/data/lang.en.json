@@ -6,7 +6,7 @@
 	"events": {
 		"first_morning" : [
 			{
-				"sound" : ["firstMorning1a", "fistMorning1b"],
+				"sound" : ["firstMorning1a", "firstMorning1b"],
 				"text" : ["It's morning", "Another attempt at making it to day's end in one piece"]
 			},
 			{
@@ -63,16 +63,29 @@
 	"settings_events" : {
 		"level_length" : [
 			[
-			{
-				"value" : 2,
-				"sound" : ["levelLength1.1a", "levelLength1.1b"],
-				"text" : ["Though it hardly was cause for celebration, the day had not been too scary.", "Only dull."]
-			},
-			{
-				"value": 0,
-				"sound": ["levelLength1.2a", "levelLength1.2b", "levelLength1.2c"],
-				"text" : ["It had been a terrible experience, just like always", "I should be happy to still be alive", "I don't feel happy"]
-			}
+				{
+					"value" : 2,
+					"sound" : ["levelLength1.1a", "levelLength1.1b"],
+					"text" : ["Though it hardly was cause for celebration, the day had not been too scary.", "Only dull."]
+				},
+				{
+					"value": 0,
+					"sound": ["levelLength1.2a", "levelLength1.2b", "levelLength1.2c"],
+					"text" : ["It had been a terrible experience, just like always", "I should be happy to still be alive", "I don't feel happy"]
+				}
+			],
+			[
+				{
+					"value" : 5,
+					"sound" : ["levelLength2.1a", "levelLength2.1b", "levelLength2.1c"],
+					"text" : ["It didn't make any sense", "It was really easy to make it to the end of the day", "Yet tomorrow still seemed dreadful"]
+			
+				},
+				{
+					"value" : 1,
+					"sound" : ["levelLength2.2a"],
+					"text" : [""]
+				}
 			]
 		]
 	},
@@ -82,5 +95,17 @@
 		"pause" : "Pause",
 		"resume" : "Resume",
 		"quit" : "Quit",
+		"settings" : "Settings",
+		"mute" : "Mute",
+		"music" : "Music",
+		"narrator" : "Narrator",
+		"subtitles" : "Subtitles",
+		"color" : "Color",
+		"default" : "Default Settings",
+		"tree" : "Tree",
+		"leaf" : "Leaf",
+		"sun" : "Sun",
+		"house" : "House",
+		"floor" : "Floor",
 	}
 }
