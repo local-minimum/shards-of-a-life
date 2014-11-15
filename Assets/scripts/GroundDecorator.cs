@@ -20,9 +20,10 @@ public class GroundDecorator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		/*
 		if (Input.GetKeyDown(KeyCode.D))
 			Decorate();
-
+		*/
 		if (debug) {
 			Vector3 lhs = Vector3.zero;
 			foreach (Vector3 rhs in _stitcher.groundSurface()) {
@@ -33,7 +34,7 @@ public class GroundDecorator : MonoBehaviour {
 		}
 	}
 
-	void Decorate() {
+	public void Decorate() {
 		Vector3 lhs = Vector3.zero;
 		bool notInit = true;
 		List<float> houseBaseWidths = new List<float>();
