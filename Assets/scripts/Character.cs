@@ -118,12 +118,14 @@ public class Character : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.tag == "PlayerStoppers")
-			level.GameOver();
+			level.LevelEndDeath();
 		else if (other.tag == "Enemy") {
 			if (!_hurters.ContainsKey(other.gameObject)) {
 				Hurt(Random.Range(1,4));
 				_hurters.Add(other.gameObject, level.sinceLevelLoaded);
 			}
+		} else if (other.tag == "LevelTarget") {
+			level.LevelEndTarget();
 		}
 
 		//Potentially make timeout for when to allow same to re-hurt
@@ -146,7 +148,7 @@ public class Character : MonoBehaviour {
 			int h = health;
 			//Debug.Log(h);
 			if (h == 0) {
-				level.GameOver();
+				level.LevelEndDeath();
 				return;
 			} else {
 				int j = Random.Range(0, health);
