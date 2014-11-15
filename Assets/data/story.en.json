@@ -1,13 +1,55 @@
 {
 	"lang": "en",
-	"sounds base directory" : "Assets/sounds/narration/en/",
+	"sounds_base_directory" : "Assets/sounds/narration/en/",
 
 	"events": {
-		"first morning" : [
+		"first_morning" : [
 			{
 				"sound" : "firstMorning.ogg",
 				"text" : ["It's morning", "Another attempt at making it to day's end in one piece"]
 			}
-		]
+		],
+		
+		"morning" : [],
+		
+		"noon" : [],
+		
+		"evening": [],
+
+		"jumping" : [],
+		
+		"waiting" : [],
+		
+		"going_back" : [],
+		
+		"trees" : [],
+		
+		"tree_climbing" : [],
+		
+		"houses" : [],
+		
+		"house_climbing": [],
+		
+		"humans" : [],
+		
+		"insects" : [],
+		
+		"void" : [],
+		
+		"shatter_self" : [],
+		
+		"shatter_world" : [],
+		
+		"death" : [],
+		
+		"death_by_fall" : [],
+		
+		"death_by_insect" : [],
+		
+		"death_by_human" : [],
+		
+		"death_by_time" : [],
+		
+		"sleeping" : []
 	}
 }
