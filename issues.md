@@ -14,3 +14,22 @@
 * Make generation faster
   * Allow non-interactables belong to same mesh to cut instanciation of MonoBehaviours drastically
   * Make trees have a max continuing segments and then too balance depth vs breadth
+
+
+* There are no insects in the trees
+  * Generation of body
+  * Behaviour
+  
+* There are no humans (well, it is a problem from the gaming perspective)
+  * Make human character
+  * Tweak human behaviour
+  
+* The light should reflect day-cycle which should reflect level time progression
+
+* Start and goal platforms
+  * Goal does not cause new level
+    * What parameters to use for difficulty except number of segments on level
+  * Platforms are boring
+    * Minimum need: place to sleep
+    
+* Narrative
