@@ -29,8 +29,8 @@
   * Add night light
 
 * Start and goal platforms
-  * Goal does not cause new level
-    * What parameters to use for difficulty except number of segments on level
+  * What parameters to use for difficulty except number of segments on level
+  * Rather than restarting scene, make transition smooth...
   * Platforms are boring
     * Minimum need: place to sleep
     
