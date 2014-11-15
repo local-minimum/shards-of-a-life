@@ -68,7 +68,7 @@ public class LevelBuilder : MonoBehaviour {
 	private GroundDecorator _groundDecorator;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		_groundStitcher = gameObject.GetComponent<GroundStitcher>();
 		_groundDecorator = gameObject.GetComponent<GroundDecorator>();
 	}
@@ -314,11 +314,13 @@ public class LevelBuilder : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.S)) {
-			_SetTemplates();
-			StartCoroutine(_DressLevel());
-		}
+	void Start () {
+//		if (Input.GetKeyDown(KeyCode.S)) {
+		_groundStitcher.Generate();
+		_groundDecorator.Decorate();
+		_SetTemplates();
+		StartCoroutine(_DressLevel());
+//		}
 
 	}
 }
