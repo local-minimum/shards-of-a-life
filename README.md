@@ -22,27 +22,4 @@ All interactable features becomes fragmented using a random triangle fill algori
 Status
 ------
 
-* Tree generation working
-* Building generation working
-* Ground type segment generation working
-* Segment to segment linking working
-* Fragmentation of meshes working
-* Basic input + physics working
-* Disruptive beams
-* Make complete level generation by connecting ground segment generation with object generation (buildings and trees)
-
-
-ToDo
-----
-
-* Make tree generation faster
-* Resolve bug that places houses in bad places
-* Tweak tree parameters
-* Make insect generation
-* Make insect behaviour
-* Make human character
-* Make human behaviour
-* Make day-cycle
-* Make bed as level start & goal
-* Make level progression
-* Add narrative
+Playable development level without enemies. Currently needing pressing 'R' for generating ground, 'D' to decorate ground and finally 'S' to fragment the world into shards before level can be played.
