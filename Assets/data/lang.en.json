@@ -17,11 +17,21 @@
 		
 		"morning" : [],
 		
-		"noon" : [],
+		"noon" : [
+			{
+				"sound" : ["noon1a", "noon1b"],
+				"text" : ["The glass was definately half empty,", "but the world more than too full."]
+			}
+		],
 		
 		"evening": [],
 
-		"jumping" : [],
+		"jumping" : [
+			{
+				"sound" : ["jump1a"],
+				"text" : ["Some people are said to jump when they are happy"]
+			}
+		],
 		
 		"waiting" : [],
 		
@@ -55,9 +65,22 @@
 		
 		"death_by_time" : [],
 		
-		"sleeping" : [],
+		"dreaming" : [],
 		
-		"pausing" : []
+		"pausing" : [
+			{
+				"sound" : ["pausing1a"],
+				"text" : ["I'll just sit here for a while and hope no one sees me"]
+			},
+			{
+				"sound" : ["pausing2a", "pausing2b"],
+				"text" : ["I need a break from this", "Just for a second."]
+			},
+			{
+				"sound" : ["pausing3a", "pausing3b"],
+				"text" : ["Time won't mind and the world won't notice", "For sure."]
+			}
+		]
 	},
 	
 	"settings_events" : {
@@ -83,8 +106,8 @@
 				},
 				{
 					"value" : 1,
-					"sound" : ["levelLength2.2a"],
-					"text" : [""]
+					"sound" : ["levelLength2.2a", "levelLength2.2b"],
+					"text" : ["Another of these days over.", "What was their use?"]
 				}
 			]
 		]
@@ -107,5 +130,11 @@
 		"sun" : "Sun",
 		"house" : "House",
 		"floor" : "Floor",
+		"ground" : "Ground",
+		"background" : "Background",
+		"difficulty" : "Difficulty",
+		"hard" : "Hard",
+		"normal" : "Normal -- whatever that is",
+		"easy" : "Easy",
 	}
 }
