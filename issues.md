@@ -25,6 +25,8 @@
   * Tweak human behaviour
   
 * The light should reflect day-cycle which should reflect level time progression
+  * Add color lerp during day
+  * Add night light
 
 * Start and goal platforms
   * Goal does not cause new level
