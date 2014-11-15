@@ -20,6 +20,12 @@ public class Level : MonoBehaviour {
 	}
 
 	public GameObject levelTarget;
+	public Transform lightCycler;
+
+	public GameObject lightMorning;
+	public GameObject lightNoon;
+	public GameObject lightEvening;
+	public GameObject lightMidnight;
 
 	private float _startX = 0f;
 	private float _distance = 0f;
@@ -68,6 +74,13 @@ public class Level : MonoBehaviour {
 			_Go();
 		else if (_started) {
 			_progress = Mathf.Clamp01((cf.X - _startX) / _distance);
+		}
+
+		if (_started) {
+			if (_progress < 0.5f)
+				lightCycler.rotation = Quaternion.Lerp(lightMorning.transform.rotation, lightNoon.transform.rotation, 2f * _progress);
+			else
+				lightCycler.rotation = Quaternion.Lerp(lightNoon.transform.rotation, lightEvening.transform.rotation, 2f * _progress - 2f);
 		}
 	}
 
