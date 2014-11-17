@@ -75,6 +75,9 @@ public class LevelBuilder : MonoBehaviour {
 
 	private void _SetTemplates() {
 //		_templates.AddRange(GameObject.FindGameObjectsWithTag(buildTag));
+		foreach (GameObject t in GameObject.FindGameObjectsWithTag("TemplateLevel"))
+			Destroy(t.gameObject);
+
 		_templates.Clear();
 		_templates.AddRange(_groundStitcher.interactables);
 		_templates.AddRange(_groundDecorator.interactables);
@@ -314,8 +317,9 @@ public class LevelBuilder : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Start () {
+	public void Start () {
 //		if (Input.GetKeyDown(KeyCode.S)) {
+
 		_groundStitcher.Generate();
 		_groundDecorator.Decorate();
 		_SetTemplates();

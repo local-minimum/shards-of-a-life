@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class Level : MonoBehaviour {
 
@@ -19,6 +19,8 @@ public class Level : MonoBehaviour {
 		}
 	}
 
+	public Transform levelStartPosition;
+	public Character player;
 	public GameObject levelTarget;
 	public Transform lightCycler;
 
@@ -26,6 +28,8 @@ public class Level : MonoBehaviour {
 	public GameObject lightNoon;
 	public GameObject lightEvening;
 	public GameObject lightMidnight;
+
+	public Camera mainCam;
 
 	private float _startX = 0f;
 	private float _distance = 0f;
@@ -94,11 +98,44 @@ public class Level : MonoBehaviour {
 	}
 
 	public void LevelEndDeath() {
-		Application.LoadLevel(Application.loadedLevel);
+		StartCoroutine( LoadNextLevel());
 	}
 
 	public void LevelEndTarget() {
-		Application.LoadLevel(Application.loadedLevel);
+		StartCoroutine( LoadNextLevel());
 	}
-	
+
+	private IEnumerator<WaitForSeconds> LoadNextLevel() {
+//		Application.LoadLevel(Application.loadedLevel);
+		cf.follow = false;
+		_started = true;
+		float startT = sinceLevelLoaded;
+		float curT = startT;
+		Vector3 camTarget1 = mainCam.transform.position + Vector3.forward * -5f;
+		Vector3 camTarget2 = levelStartPosition.transform.position;
+		camTarget2.z = camTarget1.z;
+		Vector3 camTarget3 = camTarget2;
+		camTarget3.z = mainCam.transform.position.z;
+		while (curT - 1f < startT) {
+			mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, camTarget1, (curT - startT) / 1f);
+			curT = sinceLevelLoaded;
+			yield return new WaitForSeconds(0.1f);
+		}
+		player.transform.position = levelStartPosition.position;
+
+		_builder.Start();
+		while (!_builder.ready)
+			yield return new WaitForSeconds(0.1f);
+
+		curT = sinceLevelLoaded;
+		startT = curT;
+		while (curT - 1f < startT) {
+			mainCam.transform.position = Vector3.Lerp(camTarget2, camTarget3, (curT - startT) / 1f);
+			curT = sinceLevelLoaded;
+			yield return new WaitForSeconds(0.1f);
+		}
+
+		cf.Reset();
+		_Go();
+	}
 }

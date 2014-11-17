@@ -21,6 +21,8 @@ public class CameraFollow : MonoBehaviour {
 		}
 	}
 
+	public bool follow = true;
+
 	public GameObject[] hurtCams;
 
 	// Use this for initialization
@@ -31,6 +33,9 @@ public class CameraFollow : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (!follow)
+			return;
+
 		Vector3 p = player.transform.position;
 		p.z += zDist;
 		p.y += yDist;
@@ -53,5 +58,10 @@ public class CameraFollow : MonoBehaviour {
 			g.SetActive(true);
 		}
 		//iTween.CameraFadeFrom(
+	}
+
+	public void Reset() {
+		_rightX = player.transform.position.x;
+		follow = true;
 	}
 }
